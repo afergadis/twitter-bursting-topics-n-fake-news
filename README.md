@@ -1,1 +1,1 @@
-# Bustring Topics and Fake News on Twitter
+# Bursting Topics and Fake News on Twitter
