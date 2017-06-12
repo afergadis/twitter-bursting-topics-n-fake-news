@@ -5,3 +5,22 @@ To run this application type:
 ```
 $ mvn spring-boot:run
 ```
+
+To add a demo user
+```
+$ curl 'localhost:8080/demo/add?name=First&email=someemail@someemailprovider.com'
+```
+The reply should by
+```
+Saved
+```
+
+To get all users
+```
+$ curl 'localhost:8080/demo/all'
+```
+
+The reply should be
+```
+[{"id":1,"name":"First","email":"someemail@someemailprovider.com"}]
+```
