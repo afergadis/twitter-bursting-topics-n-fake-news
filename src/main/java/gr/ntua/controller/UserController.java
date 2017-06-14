@@ -1,4 +1,4 @@
-package gr.ntua.Controller;
+package gr.ntua.controller;
 
 import gr.ntua.domain.User;
 import gr.ntua.repository.UserRepository;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Created by aris on 12/6/2017.
  */
 
-@Controller    // This means that this class is a Controller
+@Controller    // This means that this class is a controller
 @RequestMapping(path = "/demo") // This means URL's start with /demo (after Application path)
 public class UserController {
     @Autowired // This means to get the bean called userRepository
