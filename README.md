@@ -1,16 +1,20 @@
 # Bursting Topics and Fake News on Twitter
 
-Run the application using:
+Open `src/main/resources/application.properties` to change database credentials.
+
+To run this application type:
 ```
-mvn exec:java -Dexec.mainClass="gr.ntua.App"
+$ mvn spring-boot:run
 ```
 
-If you get an error
+To get trends that have a volume increase above a percent value (eg 200%).
 ```
-[ERROR] Failed to execute goal org.codehaus.mojo:exec-maven-plugin:1.4.0:java (default-cli) on project bigdata:...
+$ curl localhost:8080/bursting/200
 ```
-Then use:
+
+To get a trend by its name (eg #UbiE3). Please take care of the [URL Encoding](https://www.w3schools.com/tags/ref_urlencode.asp).
 ```
-mvn org.codehaus.mojo:exec-maven-plugin:1.5.0:java -Dexec.mainClass="gr.ntua.App"
+$ curl localhost:8080/name/%23UbiE3
 ```
-The next time you can use the first command.
+This will return a json with all the instances of the name in database along with
+its volume and percent change (burst).
