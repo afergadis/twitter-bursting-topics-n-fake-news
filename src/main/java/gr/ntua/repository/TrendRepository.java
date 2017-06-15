@@ -2,9 +2,6 @@ package gr.ntua.repository;
 
 import gr.ntua.domain.Trend;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,18 +10,20 @@ import java.util.List;
  */
 public interface TrendRepository extends JpaRepository<Trend, Long> {
 
-    List<Trend> findByNameLikeOrderByIdAsc(String name);
+    List<Trend> findByNameAndBurstingGreaterThanEqual(String name, double percent);
+
+    List<Trend> findByNameOrderByIdAsc(String name);
+
+    List<Trend> findByNameAndTimespanId(String name, long timespanId);
+
+    List<Trend> findByBurstingEquals(Double percent);
+
+    List<Trend> findByBurstingGreaterThanEqual(Double percent);
+
 
     // ATTENTION: Use class names in queries (t.name) instead of table names (t.trend_name)
-    // Find all non bursting trends in order to update the bursting flag
-    @Query(value = "SELECT DISTINCT t.name FROM Trend t WHERE t.bursting=FALSE")
-    List<String> findDistinctNamesNotBursting();
-
-    // Query to update the bursting flag in a trend
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE Trend t SET t.bursting=TRUE WHERE t.id = :id")
-    void updateBursting(@Param("id") long id);
-
-    // Get all trends by bursting flag
-    List<Trend> findAllByBurstingEquals(boolean flag);
+    // Find all trend names that has bursting value zero. This new are entries since
+    // the last api call to get bursting trends.
+//    @Query(value = "SELECT DISTINCT t.name FROM Trend t WHERE t.bursting=0")
+//    List<String> findDistinctNamesAndBurstingEqualsZero();
 }

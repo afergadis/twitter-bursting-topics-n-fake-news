@@ -5,6 +5,7 @@ import gr.ntua.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -21,10 +22,16 @@ public class TrendController {
         this.trendService = trendService;
     }
 
-    @GetMapping(path = "/bursting")
+    @GetMapping(path = "/bursting/{percent}")
     public @ResponseBody
-    Iterable<Trend> getBursting() {
-        trendService.updateBursting(50);
-        return trendService.getBursting();
+    Iterable<Trend> getBursting(@PathVariable double percent) {
+        trendService.updateBursting();
+        return trendService.getBursting(percent);
+    }
+
+    @GetMapping(path = "/name/{trend_name}")
+    public @ResponseBody
+    Iterable<Trend> getTrendName(@PathVariable String trend_name) {
+        return trendService.getTrendName(trend_name);
     }
 }

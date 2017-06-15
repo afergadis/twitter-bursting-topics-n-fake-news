@@ -21,7 +21,7 @@ public class Trend {
     @Column(name = "trend_volume")
     private Integer volume;
     @Column(name = "is_bursting")
-    private boolean bursting;
+    private Double bursting;
 
     public Long getId() {
         return id;
@@ -51,11 +51,11 @@ public class Trend {
         this.volume = volume;
     }
 
-    public boolean getBursting() {
+    public Double getBursting() {
         return bursting;
     }
 
-    public void setBursting(boolean bursting) {
+    public void setBursting(Double bursting) {
         this.bursting = bursting;
     }
 

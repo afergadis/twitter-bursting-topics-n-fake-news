@@ -23,25 +23,31 @@ public class TrendService {
     // 'percent' change, then the second indicates a bursting trend.
     // Q1: To we save the 'bursting' flag in database?
     //     If we do, then if the use changes the percent?
-    public void updateBursting(double percent) {
-        List<String> distinctByName = trendRepository.findDistinctNamesNotBursting();
-        for (String name : distinctByName) {
-            List<Trend> trendName = trendRepository.findByNameLikeOrderByIdAsc(name);
-            // Update two cascading trend_name instances if the volume is
-            // greater than the percent.
-            for (int i = 0; i < trendName.size() - 1; i++) {
-                Trend t1 = trendName.get(i);
-                Trend t2 = trendName.get(i + 1);
-                double percentChange = (t2.getVolume() / t1.getVolume().doubleValue() - 1) * 100;
-                if (percentChange >= percent) {
-                    t2.setBursting(true);
-                    trendRepository.save(t2);
-                }
+    public void updateBursting() {
+        List<Trend> trends = trendRepository.findByBurstingEquals(0.0);
+        for (Trend trend : trends) {
+            // Get the previous instance(s?) of that trend
+            List<Trend> byNameAndTimespanId = trendRepository.findByNameAndTimespanId(trend.getName(), trend.getTimespanId() - 1);
+            if (byNameAndTimespanId.size() == 0) {
+                // First seen trend
+                trend.setBursting(100.0);
+                trendRepository.save(trend);
+                continue;
+            }
+            // Update two cascading trend_name instances if the volume is greater than the percent.
+            for (Trend t : byNameAndTimespanId) {
+                double percentChange = (trend.getVolume() / t.getVolume().doubleValue() - 1) * 100;
+                trend.setBursting(percentChange);
+                trendRepository.save(trend);
             }
         }
     }
 
-    public Iterable<Trend> getBursting() {
-        return trendRepository.findAllByBurstingEquals(true);
+    public Iterable<Trend> getBursting(double percent) {
+        return trendRepository.findByBurstingGreaterThanEqual(percent);
+    }
+
+    public Iterable<Trend> getTrendName(String trend_name) {
+        return trendRepository.findByNameOrderByIdAsc(trend_name);
     }
 }
