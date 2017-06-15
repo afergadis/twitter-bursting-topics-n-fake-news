@@ -2,6 +2,9 @@ package gr.ntua.repository;
 
 import gr.ntua.domain.Trend;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -10,12 +13,18 @@ import java.util.List;
  */
 public interface TrendRepository extends JpaRepository<Trend, Long> {
 
-    //    List<Trend> findByNameLike(String name);
-    List<Trend> findByNameOrderByIdAsc(String name);
+    List<Trend> findByNameLikeOrderByIdAsc(String name);
 
-    List<Trend> findDistinctByNameLike(String name);
+    // ATTENTION: Use class names in queries (t.name) instead of table names (t.trend_name)
+    // Find all non bursting trends in order to update the bursting flag
+    @Query(value = "SELECT DISTINCT t.name FROM Trend t WHERE t.bursting=FALSE")
+    List<String> findDistinctNamesNotBursting();
 
-    //    @Query(value = "SELECT t.trend_name FROM Trend t")
-//    List<Trend> findDistinctNames();
-    List<Trend> findAllByIsBurstingEquals(String num);
+    // Query to update the bursting flag in a trend
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE Trend t SET t.bursting=TRUE WHERE t.id = :id")
+    void updateBursting(@Param("id") long id);
+
+    // Get all trends by bursting flag
+    List<Trend> findAllByBurstingEquals(boolean flag);
 }

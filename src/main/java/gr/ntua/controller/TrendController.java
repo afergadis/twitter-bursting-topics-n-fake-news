@@ -14,19 +14,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(path = "/trends")
 public class TrendController {
+    private final TrendService trendService;
+
     @Autowired
-    private TrendService trendService;
+    public TrendController(TrendService trendService) {
+        this.trendService = trendService;
+    }
 
     @GetMapping(path = "/bursting")
     public @ResponseBody
-    Iterable<Trend> getBusring() {
-        trendService.updateBursting(0.5);
+    Iterable<Trend> getBursting() {
+        trendService.updateBursting(50);
         return trendService.getBursting();
-    }
-
-    @GetMapping(path = "/hot")
-    public @ResponseBody
-    String getHot() {
-        return "Hot";
     }
 }

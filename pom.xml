@@ -61,14 +61,14 @@
 
     <repositories>
         <repository>
-            <timespanId>spring-releases</timespanId>
+            <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
-            <timespanId>spring-releases</timespanId>
+            <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>

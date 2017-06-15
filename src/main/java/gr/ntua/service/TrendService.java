@@ -12,26 +12,36 @@ import java.util.List;
  */
 @Service
 public class TrendService {
-    @Autowired
-    private TrendRepository trendRepository;
+    private final TrendRepository trendRepository;
 
+    @Autowired
+    public TrendService(TrendRepository trendRepository) {
+        this.trendRepository = trendRepository;
+    }
+
+    // The logic of this function says that two cascading in id trends if they have difference over
+    // 'percent' change, then the second indicates a bursting trend.
+    // Q1: To we save the 'bursting' flag in database?
+    //     If we do, then if the use changes the percent?
     public void updateBursting(double percent) {
-        List<Trend> distinctByName = trendRepository.findDistinctByNameLike("%");
-        for (Trend trend : distinctByName) {
-            List<Trend> trendName = trendRepository.findByNameOrderByIdAsc(trend.getName());
+        List<String> distinctByName = trendRepository.findDistinctNamesNotBursting();
+        for (String name : distinctByName) {
+            List<Trend> trendName = trendRepository.findByNameLikeOrderByIdAsc(name);
             // Update two cascading trend_name instances if the volume is
             // greater than the percent.
             for (int i = 0; i < trendName.size() - 1; i++) {
                 Trend t1 = trendName.get(i);
                 Trend t2 = trendName.get(i + 1);
-                double percentChange = (t2.getVolume() / t1.getVolume() - 1) * 100;
-                if (percentChange >= percent)
-                    t2.setBursting("1");
+                double percentChange = (t2.getVolume() / t1.getVolume().doubleValue() - 1) * 100;
+                if (percentChange >= percent) {
+                    t2.setBursting(true);
+                    trendRepository.save(t2);
+                }
             }
         }
     }
 
     public Iterable<Trend> getBursting() {
-        return trendRepository.findAllByIsBurstingEquals("1");
+        return trendRepository.findAllByBurstingEquals(true);
     }
 }

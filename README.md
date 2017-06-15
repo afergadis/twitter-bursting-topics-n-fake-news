@@ -22,5 +22,5 @@ $ curl 'localhost:8080/demo/all'
 
 The reply should be
 ```
-[{"id":1,"name":"First","email":"someemail@someemailprovider.com"}]
+[{"timespanId":1,"name":"First","email":"someemail@someemailprovider.com"}]
 ```
