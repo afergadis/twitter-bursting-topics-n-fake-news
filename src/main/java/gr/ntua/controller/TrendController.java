@@ -4,10 +4,7 @@ import gr.ntua.domain.Trend;
 import gr.ntua.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by aris on 13/6/2017.
@@ -24,9 +21,11 @@ public class TrendController {
 
     @GetMapping(path = "/bursting/{percent}")
     public @ResponseBody
-    Iterable<Trend> getBursting(@PathVariable double percent) {
+    Iterable<Trend> getBursting(@PathVariable Double percent,
+                                @RequestParam(required = false) Long from,
+                                @RequestParam(required = false) Long to) {
         trendService.updateBursting();
-        return trendService.getBursting(percent);
+        return trendService.getBursting(percent, from, to);
     }
 
     @GetMapping(path = "/name/{trend_name}")

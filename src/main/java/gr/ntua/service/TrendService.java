@@ -43,8 +43,16 @@ public class TrendService {
         }
     }
 
-    public Iterable<Trend> getBursting(double percent) {
-        return trendRepository.findByBurstingGreaterThanEqual(percent);
+    public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
+        if (from != null && to == null) {
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
+        } else if (from == null && to != null) {
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(percent, to);
+        } else if (from != null) {
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
+        } else {
+            return trendRepository.findByBurstingGreaterThanEqual(percent);
+        }
     }
 
     public Iterable<Trend> getTrendName(String trend_name) {

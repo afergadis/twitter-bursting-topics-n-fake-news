@@ -20,6 +20,11 @@ public interface TrendRepository extends JpaRepository<Trend, Long> {
 
     List<Trend> findByBurstingGreaterThanEqual(Double percent);
 
+    List<Trend> findByBurstingGreaterThanEqualAndTimespanIdBetween(Double percent, Long start, Long end);
+
+    List<Trend> findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(Double percent, Long from);
+
+    List<Trend> findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(Double percent, Long to);
 
     // ATTENTION: Use class names in queries (t.name) instead of table names (t.trend_name)
     // Find all trend names that has bursting value zero. This new are entries since
