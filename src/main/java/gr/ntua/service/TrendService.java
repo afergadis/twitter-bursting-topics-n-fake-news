@@ -44,6 +44,13 @@ public class TrendService {
     }
 
     public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
+        if (from != null && from <= 0) {
+            Trend trend = trendRepository.findTopByOrderByIdDesc();
+            from = trend.getTimespanId() + from;
+        }
+        if (to != null && to <= 0) {
+            return null;
+        }
         if (from != null && to == null) {
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
         } else if (from == null && to != null) {
