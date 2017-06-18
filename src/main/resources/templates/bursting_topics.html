@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Bursting Topics</title>
+    <!--/*/ <th:block th:include="fragments/header_inc :: head"></th:block> /*/-->
+</head>
+<body>
+<h2>Bursting Topics</h2>
+<table>
+    <thead>
+    <tr>
+        <th th:text="#{trend.timespanId}">Time Span Id</th>
+        <th th:text="#{trend.name}">Name</th>
+        <th th:text="#{trend.volume}">Volume</th>
+        <th th:text="#{trend.bursting}">Bursting</th>
+    </tr>
+    </thead>
+    <tr th:each="trend: ${trends}">
+        <td th:text="${trend.timespanId}">timespanId</td>
+        <td th:text="${trend.name}">name</td>
+        <td th:text="${trend.volume}">volume</td>
+        <td th:text="${trend.bursting}">bursting</td>
+    </tr>
+</table>
+</body>
+</html>
