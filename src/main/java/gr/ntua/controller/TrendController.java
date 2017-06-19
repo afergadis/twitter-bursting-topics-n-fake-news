@@ -4,6 +4,7 @@ import gr.ntua.domain.Trend;
 import gr.ntua.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,6 +18,18 @@ public class TrendController {
     @Autowired
     public TrendController(TrendService trendService) {
         this.trendService = trendService;
+    }
+
+    @GetMapping(path = "/")
+    public String index() {
+        return "index";
+    }
+
+    // TODO: path /bursting should return a form to input a value
+    @GetMapping(path = "/bursting")
+    public String bursting(Model model) {
+        model.addAttribute("trends", trendService.getBursting(200.0, null, null));
+        return "bursting_topics";
     }
 
     @GetMapping(path = "/bursting/{percent}")
