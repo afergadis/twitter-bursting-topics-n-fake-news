@@ -44,22 +44,21 @@ public class TrendService {
     }
 
     public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
-        if (from != null && from <= 0) {
+        // Treat to==null and to==0 as now
+        if (to == null || to == 0) {
             Trend trend = trendRepository.findTopByOrderByIdDesc();
-            from = trend.getTimespanId() + from;
+            to = trend.getTimespanId();
         }
-        if (to != null && to <= 0) {
-            return null;
+        if (to < 0) { // Find the relative `to`
+            Trend trend = trendRepository.findTopByOrderByIdDesc();
+            to = trend.getTimespanId() + to;
         }
-        if (from != null && to == null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
-        } else if (from == null && to != null) {
+        if (from == null) {  // From the beginning until `to`
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(percent, to);
-        } else if (from != null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
-        } else {
-            return trendRepository.findByBurstingGreaterThanEqual(percent);
         }
+        if (from < to)  // Should be, either negative or positive
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
+        return null;
     }
 
     public Iterable<Trend> getTrendName(String trend_name) {
