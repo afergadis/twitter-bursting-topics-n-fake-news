@@ -1,5 +1,6 @@
 package gr.ntua.controller;
 
+import gr.ntua.Params;
 import gr.ntua.domain.Trend;
 import gr.ntua.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
  * Created by aris on 13/6/2017.
  */
 @Controller
-@RequestMapping(path = "/trends")
 public class TrendController {
     private final TrendService trendService;
 
@@ -21,14 +21,26 @@ public class TrendController {
     }
 
     @GetMapping(path = "/")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("params", new Params());
         return "index";
     }
 
+    @GetMapping(path = "/trend")
+    public String trendForm(Model model) {
+        model.addAttribute("trend", new Trend());
+        return "trend";
+    }
+
+    @PostMapping(path = "/trend")
+    public String trendSubmit(@ModelAttribute Trend trend) {
+        return "result";
+    }
+
     // TODO: path /bursting should return a form to input a value
-    @GetMapping(path = "/bursting")
-    public String bursting(Model model) {
-        model.addAttribute("trends", trendService.getBursting(200.0, null, null));
+    @PostMapping(path = "/bursting")
+    public String bursting(@ModelAttribute Params params, Model model) {
+        model.addAttribute("trends", trendService.getBursting(params.getPercent(), params.getFrom(), params.getTo()));
         return "bursting_topics";
     }
 
