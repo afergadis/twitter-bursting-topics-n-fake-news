@@ -1,6 +1,7 @@
 package gr.ntua.service;
 
 import gr.ntua.domain.Trend;
+import gr.ntua.domain.TrendInfo;
 import gr.ntua.repository.TrendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,12 @@ public class TrendService {
 
     public Iterable<Trend> getTrendName(String trend_name) {
         return trendRepository.findByNameOrderByIdAsc(trend_name);
+    }
+
+    //TODO: should return the trend info and the tweets
+    public TrendInfo getTrendInfo(Long trend_id) {
+        TrendInfo trendInfo = new TrendInfo();
+
+        return trendInfo;
     }
 }

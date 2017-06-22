@@ -1,8 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Bursting Trends &mdash; Bursting Trends </title>
+    <title>Bursting Trends &mdash; Bursting and Fake News from
+        Twitter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description"
           content="Find the bursting topics and the fake news from twitter" />
@@ -23,6 +27,10 @@
     <link rel="stylesheet" th:href="@{css/owl.theme.default.min.css}" href="../../static/css/owl.theme.default.min.css"/>
     <!-- Salvattore -->
     <link rel="stylesheet" th:href="@{css/salvattore.css}" href="../../static/css/salvattore.css"/>
+
+    <!-- Modernizr JS -->
+    <!--<script th:src="@{js/modernizr-2.6.2.min.js}" src="../../static/js/modernizr-2.6.2.min.js"></script>-->
+
 </head>
 <body>
 
@@ -34,87 +42,72 @@
                    data-toggle="collapse" data-target="#fh5co-navbar"
                    aria-expanded="false" aria-controls="navbar"><span>Menu</span>
                     <i></i></a>-->
-                <a href="contact.html" th:href="@{'/contact/'}" class="fh5co-nav-toggle">Contact Us</a>
+                <a href="#" class="fh5co-nav-toggle">Contact Us</a>
                 <a href="index.html" class="navbar-brand"><span>Bursting Trends</span></a>
             </div>
         </div>
     </div>
 </div>
 
-
 <div id="fh5co-page">
     <div id="fh5co-wrap">
-        <div id="fh5co-features" data-section="features">
+        <div id="fh5co-products" data-section="products">
 
             <div class="container">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2 fh5co-section-heading text-center">
-                        <h2 class="fh5co-lead to-animate">Explore the bursting news!</h2>
-                        <p class="fh5co-sub to-animate">Choose one of the bursting topics below and check some information as well as some of its representative tweets posted!</p>
+                        <h2 class="fh5co-lead animate-single product-animate-1">Team Members</h2>
+                        <!-- <p class="fh5co-sub animate-single product-animate-2">...</p>-->
                     </div>
 
-                        <div th:each="trend: ${trends}">
-                            <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
-                                <form action="#" th:action="@{/fake}" th:object="${newtrend}" class="fh5co-feature to-animate" method="post">
-                                    <span class="fh5co-feature-icon"><i class="icon-eye"></i></span>
-                                    <h3 class="fh5co-feature-lead" th:text="${trend.name}"> </h3>
-                                    <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.timespanId}" > Pick Time</p>
-                                    <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}" > Volume</p>
-                                    <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}" > %</p>
-                                    <input type="hidden" name="trendId" value="${trend.id}"/>
-                                    <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
-                                    <input class="fh5co-feature-btn" type="submit" value="More Info"/>
-                                </form>
-                            </div>
-                        </div>
-                        <!--<div class="clearfix visible-sm-block"></div>-->
 
-                        <div class="fh5co-spacer fh5co-spacer-sm"></div>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                        <a href="static/images/member1.png" class="fh5co-figure to-animate image-popup">
+                            <figure>
+                                <img th:src="@{images/member1.png}" src="../../static/images/member1.png" alt="member" class="img-responsive"/>
+                            </figure>
+                            <h3 class="fh5co-figure-lead">Alexiou Georgios</h3>
+                            <p class="fh5co-figure-text">galexiou at central dot ntua dot gr</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                        <a href="static/images/member2.png" class="fh5co-figure to-animate image-popup">
+                            <figure>
+                                <img th:src="@{images/member2.png}" src="../../static/images/member2.png" alt="member" class="img-responsive"/>
+                            </figure>
+                            <h3 class="fh5co-figure-lead">Fergadis Aris</h3>
+                            <p class="fh5co-figure-text">fergadis at central dot ntua dot gr</p>
+                        </a>
+                    </div>
+                    <div class="clearfix visible-sm-block"></div>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                        <a href="static/images/member3.png" class="fh5co-figure to-animate image-popup"/>
+                            <figure>
+                                <img th:src="@{images/member3.png}" src="../../static/images/member3.png" alt="member" class="img-responsive">
+                            </figure>
+                            <h3 class="fh5co-figure-lead">Pla-Karidi Danai</h3>
+                            <p class="fh5co-figure-text">dplakar at central dot ntua dot gr</p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                        <a href="static/images/member4.png" class="fh5co-figure to-animate image-popup">
+                            <figure>
+                                <img th:src="@{images/member4.png}" src="../../static/images/member4.png" alt="member" class="img-responsive"/>
+                            </figure>
+                            <h3 class="fh5co-figure-lead">Zamani Katerina</h3>
+                            <p class="fh5co-figure-text">kzam at central dot ntua dot gr</p>
+                        </a>
+                    </div>
+
+                    <div class="clearfix visible-sm-block"></div>
+
                 </div>
             </div>
 
-
         </div>
 
-        <div id="fh5co-subscribe2">
-            <div class="container">
-                <p><b>Check all the bursting topics in a specific period of time!</b></p>
-
-                <div class="row animate-box">
-                    <form action="#" th:action="@{/bursting}" th:object="${params}" method="post">
-                        <div class="col-md-3 col-sm-3">
-                            <div class="form-group">
-                                <input class="form-control" type="number" th:field="*{percent}" placeholder="Percentage (%) of bursting"/>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-3">
-                            <div class="form-group">
-                                <!--<input class="form-control" type="text" th:field="*{from}" placeholder="From Time ..."/>-->
-                                <select class="form-control" th:field="*{from}">
-                                    <option th:each="i : ${fromList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-3">
-                            <div class="form-group">
-                                <select class="form-control" th:field="*{to}">
-                                    <option th:each="i : ${toList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-3">
-                            <div class="form-group">
-                                <input type="submit" class="btn btn-primary" value="Check"/>
-                            </div>
-                        </div>
-
-                        <!--<p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>-->
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
+
     <div id="fh5co-footer">
         <div class="fh5co-overlay"></div>
         <div class="fh5co-footer-content">
@@ -123,8 +116,8 @@
                     <div class="col-md-3 col-sm-4 col-md-push-3">
                         <h3 class="fh5co-lead">About</h3>
                         <ul>
-                            <li><a href="contact.jsp">Team Members</a></li>
-                            <li><a href="contact.jsp">Contact Us</a></li>
+                            <li><a href="contact.html">Team Members</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
                         </ul>
                     </div>
                     <div class="col-md-3 col-sm-4 col-md-push-3">
@@ -164,7 +157,6 @@
             </div>
         </div>
     </div>
-    <!--</footer>-->
 
 </div>
 
