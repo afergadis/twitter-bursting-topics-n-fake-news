@@ -54,7 +54,7 @@ public class TrendService {
         if (from != null && to == null) {
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
         } else if (from == null && to != null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(percent, to);
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqualOrderByIdAsc(percent, to);
         } else if (from != null) {
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
         } else {
