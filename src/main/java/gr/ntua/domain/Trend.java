@@ -27,6 +27,10 @@ public class Trend {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getTimespanId() {
         return timespanId;
     }

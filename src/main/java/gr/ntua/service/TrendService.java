@@ -2,6 +2,7 @@ package gr.ntua.service;
 
 import gr.ntua.domain.Trend;
 import gr.ntua.domain.TrendInfo;
+import gr.ntua.domain.Tweet;
 import gr.ntua.repository.TrendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,22 @@ public class TrendService {
 
     //TODO: should return the trend info and the tweets
     public TrendInfo getTrendInfo(Long trend_id) {
-        TrendInfo trendInfo = new TrendInfo();
+        //TODO: get the Trend with the specific id and initialize the TrendInfo
+        //dummy
+        Trend dummyTrend = new Trend();
+        dummyTrend.setId(trend_id);
+        dummyTrend.setName("Topic_1");
+
+        //TODO: Go to TrendInfo and change the dummy ...
+        TrendInfo trendInfo = new TrendInfo(dummyTrend);
+
+        //dummy for tweets
+        for(int i=0; i<5; i++) {
+            Tweet t = new Tweet();
+            t.setMessage("hello. this is a tweet message");
+            t.setFakeScore(i*0.25*100);
+            trendInfo.addTweet(t);
+        }
 
         return trendInfo;
     }

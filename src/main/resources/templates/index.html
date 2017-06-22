@@ -28,30 +28,15 @@
     <!-- Salvattore -->
     <link rel="stylesheet" th:href="@{css/salvattore.css}" href="../../static/css/salvattore.css"/>
 
-    <!-- Modernizr JS -->
-    <!--<script th:src="@{js/modernizr-2.6.2.min.js}" src="../../static/js/modernizr-2.6.2.min.js"></script>-->
-
 </head>
 <body>
-<!--
-<div id="fh5co-offcanvass">
-    <ul>
-        <li class="active"><a href="index.jsp" data-nav-section="home">Home</a></li>
-        <li><a href="${pageContext.request.contextPath}/topics" data-nav-section="features">Bursting Topics</a></li>
-        <li><a href="contact.jsp" data-nav-section="products">Contact Us</a></li>
-    </ul>
-</div>
--->
+
 <div id="fh5co-menu" class="navbar">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <!--<a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"
-                   data-toggle="collapse" data-target="#fh5co-navbar"
-                   aria-expanded="false" aria-controls="navbar"><span>Menu</span>
-                    <i></i></a>-->
-                <a href="contact.html" th:href="@{'/contact/'}" class="fh5co-nav-toggle">Contact Us</a>
-                <a href="index.html" class="navbar-brand"><span>Bursting Trends</span></a>
+                <a href="/contact" th:href="@{/contact}" class="fh5co-nav-toggle">Contact Us</a>
+                <a href="/" th:href="@{/}" class="navbar-brand"><span>Bursting Trends</span></a>
             </div>
         </div>
     </div>
@@ -79,15 +64,11 @@
                                 them by time</a>!
                             </p>
                             <p class="to-animate intro-animate-3">
-                            <form class="btn btn-primary btn-md" action="#" th:action="@{/bursting}" th:object="${params}" method="post">
-                            <!--<form class="btn btn-primary btn-md"
-                                  action="${pageContext.request.contextPath}/topics" method="get">-->
-
-                                <div class="icon-twitter">
-                                    <input type="submit" value="Check them All!" />
-                                </div>
-                            </form>
-                            <!--  <a href="topics.jsp" class="btn btn-primary btn-md"><i class="icon-twitter"></i> Just Try!</a>-->
+                                <form class="btn btn-primary btn-md" action="#" th:action="@{/bursting}" th:object="${params}" method="post">
+                                    <div class="icon-twitter">
+                                        <input type="submit" value="Check them All!" />
+                                    </div>
+                                </form>
                             </p>
                         </div>
                         <div
@@ -164,62 +145,7 @@
                                 </div>
                             </div>
 
-                            <!--<p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>-->
                         </form>
-
-                        <!--<form action="${pageContext.request.contextPath}/topics" method="post">
-                            <div class="col-md-3 col-sm-3">
-                                <div class="form-group">
-                                    <select class="form-control" name="from">
-                                        <option value="-" disabled selected>From ...</option>
-                                        <option value="00">00.00</option>
-                                        <option value="02">02.00</option>
-                                        <option value="04">04.00</option>
-                                        <option value="06">06.00</option>
-                                        <option value="08">08.00</option>
-                                        <option value="10">10.00</option>
-                                        <option value="12">12.00</option>
-                                        <option value="14">14.00</option>
-                                        <option value="16">16.00</option>
-                                        <option value="18">18.00</option>
-                                        <option value="20">20.00</option>
-                                        <option value="22">22.00</option>
-                                        <option value="24">40.00</option>
-                                    </select>
-                                     <input type="text" class="form-control"
-                                        placeholder="First Name">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-3">
-                                <div class="form-group">
-                                    <select class="form-control" name="to">
-                                        <option value="" disabled selected>Until ...</option>
-                                        <option value="now">Now</option>
-                                        <option value="00">00.00</option>
-                                        <option value="02">02.00</option>
-                                        <option value="04">04.00</option>
-                                        <option value="06">06.00</option>
-                                        <option value="08">08.00</option>
-                                        <option value="10">10.00</option>
-                                        <option value="12">12.00</option>
-                                        <option value="14">14.00</option>
-                                        <option value="16">16.00</option>
-                                        <option value="18">18.00</option>
-                                        <option value="20">20.00</option>
-                                        <option value="22">22.00</option>
-                                        <option value="24">40.00</option>
-                                    </select>
-                                </div>
-                                  <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Last Name">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-3">
-                                <div class="form-group">
-                                    <input type="submit" class="btn btn-primary" value="Check">
-                                </div>
-                            </div>
-                        </form> -->
                     </div>
 
                 </div>
@@ -228,11 +154,6 @@
         </div>
     </div>
 
-
-    <!--<footer id="fh5co-footer" style="">
-        111
-        <div class="fh5co-overlay"></div>
-        22-->
     <div id="fh5co-footer">
         <div class="fh5co-overlay"></div>
         <div class="fh5co-footer-content">
@@ -241,8 +162,8 @@
                     <div class="col-md-3 col-sm-4 col-md-push-3">
                         <h3 class="fh5co-lead">About</h3>
                         <ul>
-                            <li><a href="contact.jsp">Team Members</a></li>
-                            <li><a href="contact.jsp">Contact Us</a></li>
+                            <li><a href="/contact" th:href="@{/contact}">Team Members</a></li>
+                            <li><a href="/contact" th:href="@{/contact}">Contact Us</a></li>
                         </ul>
                     </div>
                     <div class="col-md-3 col-sm-4 col-md-push-3">
@@ -263,7 +184,7 @@
 
                     <div class="col-md-3 col-sm-12 col-md-pull-9">
                         <div class="fh5co-footer-logo">
-                            <a href="index.jsp">Bursting Trends</a>
+                            <a href="/" th:href="@{/}">Bursting Trends</a>
                         </div>
                         <p class="fh5co-copyright">
                             <small>&copy; 2017. All Rights Reserved.
@@ -282,7 +203,6 @@
             </div>
         </div>
     </div>
-    <!--</footer>-->
 
 </div>
 

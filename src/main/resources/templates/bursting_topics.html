@@ -30,12 +30,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <!--<a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"
-                   data-toggle="collapse" data-target="#fh5co-navbar"
-                   aria-expanded="false" aria-controls="navbar"><span>Menu</span>
-                    <i></i></a>-->
-                <a href="contact.html" th:href="@{'/contact/'}" class="fh5co-nav-toggle">Contact Us</a>
-                <a href="index.html" class="navbar-brand"><span>Bursting Trends</span></a>
+                <a href="/contact" th:href="@{/contact}" class="fh5co-nav-toggle">Contact Us</a>
+                <a href="/" th:href="@{/}" class="navbar-brand"><span>Bursting Trends</span></a>
             </div>
         </div>
     </div>
@@ -61,7 +57,7 @@
                                     <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.timespanId}" > Pick Time</p>
                                     <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}" > Volume</p>
                                     <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}" > %</p>
-                                    <input type="hidden" name="trendId" value="${trend.id}"/>
+                                    <input type="hidden" name="trendId" th:value="${trend.id}"/>
                                     <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
                                     <input class="fh5co-feature-btn" type="submit" value="More Info"/>
                                 </form>
@@ -109,7 +105,6 @@
                             </div>
                         </div>
 
-                        <!--<p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>-->
                     </form>
                 </div>
             </div>
@@ -123,8 +118,8 @@
                     <div class="col-md-3 col-sm-4 col-md-push-3">
                         <h3 class="fh5co-lead">About</h3>
                         <ul>
-                            <li><a href="contact.jsp">Team Members</a></li>
-                            <li><a href="contact.jsp">Contact Us</a></li>
+                            <li><a href="/contact" th:href="@{/contact}">Team Members</a></li>
+                            <li><a href="/contact" th:href="@{/contact}">Contact Us</a></li>
                         </ul>
                     </div>
                     <div class="col-md-3 col-sm-4 col-md-push-3">
@@ -145,7 +140,7 @@
 
                     <div class="col-md-3 col-sm-12 col-md-pull-9">
                         <div class="fh5co-footer-logo">
-                            <a href="index.jsp">Bursting Trends</a>
+                            <a href="/" th:href="@{/}">Bursting Trends</a>
                         </div>
                         <p class="fh5co-copyright">
                             <small>&copy; 2017. All Rights Reserved.

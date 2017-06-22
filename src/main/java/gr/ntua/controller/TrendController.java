@@ -23,16 +23,25 @@ public class TrendController {
 
     @GetMapping(path = "/")
     public String index(Model model) {
-        Params params = new Params();
+        try {
+            Params params = new Params();
 
-        List fromList = params.getPossibleFrom();
-        List toList = params.getPossibleTo();
+            List fromList = params.getPossibleFrom();
+            List toList = params.getPossibleTo();
 
-        model.addAttribute("params", params);
-        model.addAttribute("fromList", fromList);
-        model.addAttribute("toList", toList);
+            model.addAttribute("params", params);
+            model.addAttribute("fromList", fromList);
+            model.addAttribute("toList", toList);
+        } catch (Exception e){
+            return "error";
+        }
 
         return "index";
+    }
+
+    @GetMapping(path = "/contact")
+    public String contact() {
+        return "contact";
     }
 
     @GetMapping(path = "/trend")
@@ -61,27 +70,37 @@ public class TrendController {
             toL = null;
         }
 
-        Double percentage = 100.0;
-        if ((params.getPercent() != null) && (params.getPercent() > 0)) {
-            percentage = new Double(params.getPercent());
+        try {
+            Double percentage = 100.0;
+            if ((params.getPercent() != null) && (params.getPercent() > 0)) {
+                percentage = new Double(params.getPercent());
+            }
+
+
+            model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
+            List fromList = params.getPossibleFrom();
+            List toList = params.getPossibleTo();
+
+            model.addAttribute("fromList", fromList);
+            model.addAttribute("toList", toList);
+            model.addAttribute("newtrend", new Trend());
+        } catch (Exception ex) {
+            return "error";
         }
-
-        System.out.println("from: "+fromL+" to: "+toL);
-
-        model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
-        List fromList = params.getPossibleFrom();
-        List toList = params.getPossibleTo();
-
-        model.addAttribute("fromList", fromList);
-        model.addAttribute("toList", toList);
         return "bursting_topics";
     }
 
     @PostMapping(path = "/fake")
-    public String fake(@ModelAttribute Trend newtrend, Model model, @RequestParam("trendId") Long id) {
-        System.out.println("the id it gets is ...  "+id);
+    public String fake(@ModelAttribute Trend newtrend, Model model, @RequestParam("trendId") String id) {
+        Long idL = null;
 
-        model.addAttribute("trendInfo", trendService.getTrendInfo(id));
+        try {
+            idL = Long.parseLong(id);
+
+            model.addAttribute("trendInfo", trendService.getTrendInfo(idL));
+        } catch (Exception e){
+            return "error";
+        }
         return "topic_info";
     }
 
