@@ -3,12 +3,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Bursting Trends &mdash; Bursting Trends </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description"
-          content="Find the bursting topics and the fake news from twitter" />
+          content="Find the bursting topics and the fake news from twitter"/>
     <meta name="keywords"
-          content="bursting topics, fake news, breaking news, twitter" />
-    <meta name="author" content="katerina zamani" />
+          content="bursting topics, fake news, breaking news, twitter"/>
+    <meta name="author" content="katerina zamani"/>
 
     <link rel="stylesheet" th:href="@{css/animate.css}" href="../../static/css/animate.css"/>
     <!-- Icomoon Icon Fonts-->
@@ -20,7 +20,8 @@
     <!-- Owl Carousel -->
     <link rel="stylesheet" th:href="@{css/wl.carousel.min.css}" href="../../static/css/owl.carousel.min.css"/>
     <link rel="stylesheet" th:href="@{css/style.css}" href="../../static/css/style.css"/>
-    <link rel="stylesheet" th:href="@{css/owl.theme.default.min.css}" href="../../static/css/owl.theme.default.min.css"/>
+    <link rel="stylesheet" th:href="@{css/owl.theme.default.min.css}"
+          href="../../static/css/owl.theme.default.min.css"/>
     <!-- Salvattore -->
     <link rel="stylesheet" th:href="@{css/salvattore.css}" href="../../static/css/salvattore.css"/>
 </head>
@@ -46,26 +47,28 @@
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2 fh5co-section-heading text-center">
                         <h2 class="fh5co-lead to-animate">Explore the bursting news!</h2>
-                        <p class="fh5co-sub to-animate">Choose one of the bursting topics below and check some information as well as some of its representative tweets posted!</p>
+                        <p class="fh5co-sub to-animate">Choose one of the bursting topics below and check some
+                            information as well as some of its representative tweets posted!</p>
                     </div>
 
-                        <div th:each="trend: ${trends}">
-                            <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
-                                <form action="#" th:action="@{/fake}" th:object="${newtrend}" class="fh5co-feature to-animate" method="post">
-                                    <span class="fh5co-feature-icon"><i class="icon-eye"></i></span>
-                                    <h3 class="fh5co-feature-lead" th:text="${trend.name}"> </h3>
-                                    <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.timespanId}" > Pick Time</p>
-                                    <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}" > Volume</p>
-                                    <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}" > %</p>
-                                    <input type="hidden" name="trendId" th:value="${trend.id}"/>
-                                    <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
-                                    <input class="fh5co-feature-btn" type="submit" value="More Info"/>
-                                </form>
-                            </div>
+                    <div th:each="trend: ${trends}">
+                        <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                            <form action="#" th:action="@{/fake}" th:object="${newtrend}"
+                                  class="fh5co-feature to-animate" method="post">
+                                <span class="fh5co-feature-icon"><i class="icon-eye"></i></span>
+                                <h3 class="fh5co-feature-lead" th:text="${trend.name}"></h3>
+                                <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.timespanId}"> Pick Time</p>
+                                <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}"> Volume</p>
+                                <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}"> %</p>
+                                <input type="hidden" name="trendId" th:value="${trend.id}"/>
+                                <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
+                                <input class="fh5co-feature-btn" type="submit" value="More Info"/>
+                            </form>
                         </div>
-                        <!--<div class="clearfix visible-sm-block"></div>-->
+                    </div>
+                    <!--<div class="clearfix visible-sm-block"></div>-->
 
-                        <div class="fh5co-spacer fh5co-spacer-sm"></div>
+                    <div class="fh5co-spacer fh5co-spacer-sm"></div>
                 </div>
             </div>
 
@@ -80,21 +83,26 @@
                     <form action="#" th:action="@{/bursting}" th:object="${params}" method="post">
                         <div class="col-md-3 col-sm-3">
                             <div class="form-group">
-                                <input class="form-control" type="number" th:field="*{percent}" placeholder="Percentage (%) of bursting"/>
+                                <input class="form-control" type="number" th:field="*{percent}"
+                                       placeholder="Percentage (%) of bursting"/>
                             </div>
                         </div>
                         <div class="col-md-3 col-sm-3">
                             <div class="form-group">
                                 <!--<input class="form-control" type="text" th:field="*{from}" placeholder="From Time ..."/>-->
                                 <select class="form-control" th:field="*{from}">
-                                    <option th:each="i : ${fromList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
+                                    <option th:each="i : ${fromList}" th:value="${i}" th:text="${i}"
+                                            th:selected="${ i==0 }">Options
+                                    </option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-3 col-sm-3">
                             <div class="form-group">
                                 <select class="form-control" th:field="*{to}">
-                                    <option th:each="i : ${toList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
+                                    <option th:each="i : ${toList}" th:value="${i}" th:text="${i}"
+                                            th:selected="${ i==0 }">Options
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -165,7 +173,7 @@
 
 
 <!-- jQuery -->
-<script  th:src="@{js/jquery.min.js}" src="../../static/js/jquery.min.js"></script>
+<script th:src="@{js/jquery.min.js}" src="../../static/js/jquery.min.js"></script>
 <!-- jQuery Easing -->
 <script th:src="@{js/jquery.easing.1.3.js}" src="../../static/js/jquery.easing.1.3.js"></script>
 <!-- Bootstrap -->

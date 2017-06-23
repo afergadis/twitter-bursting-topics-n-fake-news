@@ -1,14 +1,13 @@
 package gr.ntua.controller;
 
-import gr.ntua.entities.Params;
 import gr.ntua.domain.Trend;
+import gr.ntua.entities.Params;
 import gr.ntua.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,7 +31,7 @@ public class TrendController {
             model.addAttribute("params", params);
             model.addAttribute("fromList", fromList);
             model.addAttribute("toList", toList);
-        } catch (Exception e){
+        } catch (Exception e) {
             return "error";
         }
 
@@ -98,7 +97,7 @@ public class TrendController {
             idL = Long.parseLong(id);
 
             model.addAttribute("trendInfo", trendService.getTrendInfo(idL));
-        } catch (Exception e){
+        } catch (Exception e) {
             return "error";
         }
         return "topic_info";

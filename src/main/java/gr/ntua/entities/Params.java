@@ -41,15 +41,15 @@ public class Params {
         List fromList = new ArrayList<String>();
         fromList.add("From Time ...");
 
-        if((hours % 2)!=0) {
-            hours = hours-1;
+        if ((hours % 2) != 0) {
+            hours = hours - 1;
         }
-        for(int i=hours; i<=24; i=i+2) {
-            fromList.add(i+":00");
+        for (int i = hours; i <= 24; i = i + 2) {
+            fromList.add(i + ":00");
         }
 
-        for(int i=2; i<hours; i=i+2) {
-            fromList.add(i+":00");
+        for (int i = 2; i < hours; i = i + 2) {
+            fromList.add(i + ":00");
         }
 
         return fromList;
@@ -62,23 +62,23 @@ public class Params {
         List toList = new ArrayList<String>();
         toList.add("Until Time ...");
 
-        if((hours % 2)!=0) {
-            hours = hours-1;
+        if ((hours % 2) != 0) {
+            hours = hours - 1;
         }
 
-        for(int i=hours+2; i<=24; i=i+2) {
-            toList.add(i+":00");
+        for (int i = hours + 2; i <= 24; i = i + 2) {
+            toList.add(i + ":00");
         }
 
-        for(int i=2; i<=hours; i=i+2) {
-            toList.add(i+":00");
+        for (int i = 2; i <= hours; i = i + 2) {
+            toList.add(i + ":00");
         }
 
         return toList;
     }
 
     public Long convert2timespan(String time) throws Exception {
-        if(time.contains(":")) {
+        if (time.contains(":")) {
             String[] parts = time.split(":");
             int chosenTime = Integer.parseInt(parts[0]);
 
@@ -86,16 +86,14 @@ public class Params {
             int hours = dt.getHourOfDay();
             int timespan = 0;
 
-            if(hours > chosenTime) {
+            if (hours > chosenTime) {
                 timespan = -1 * (hours - chosenTime);
-            }
-            else {
+            } else {
                 timespan = -1 * (24 - (chosenTime - hours));
             }
 
             return new Long(timespan);
-        }
-        else {
+        } else {
             throw new Exception();
         }
     }

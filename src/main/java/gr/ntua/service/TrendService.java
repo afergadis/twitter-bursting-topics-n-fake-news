@@ -93,10 +93,10 @@ public class TrendService {
         TrendInfo trendInfo = new TrendInfo(dummyTrend);
 
         //dummy for tweets
-        for(int i=0; i<5; i++) {
+        for (int i = 0; i < 5; i++) {
             Tweet t = new Tweet();
             t.setMessage("hello. this is a tweet message");
-            t.setFakeScore(i*0.25*100);
+            t.setFakeScore(i * 0.25 * 100);
             trendInfo.addTweet(t);
         }
 

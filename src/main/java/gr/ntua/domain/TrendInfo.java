@@ -13,6 +13,7 @@ public class TrendInfo {
     public TrendInfo(Trend trend) {
         this.trend = trend;
     }
+
     public Trend getTrend() {
         return trend;
     }
@@ -25,7 +26,11 @@ public class TrendInfo {
         return tweets;
     }
 
-    public void setTweets(List<Tweet> tweets) { this.tweets = tweets; }
+    public void setTweets(List<Tweet> tweets) {
+        this.tweets = tweets;
+    }
 
-    public void addTweet(Tweet tweet) { this.tweets.add(tweet); }
+    public void addTweet(Tweet tweet) {
+        this.tweets.add(tweet);
+    }
 }
