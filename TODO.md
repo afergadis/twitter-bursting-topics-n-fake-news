@@ -3,4 +3,5 @@
     - Check if `from<to`.</strike>
     
 2. Add time information to Trend class.
-3. <strike>Accept trendId</strike>
+3. <strike>Accept trendId.</strike>
+4. Try different options in RF model.

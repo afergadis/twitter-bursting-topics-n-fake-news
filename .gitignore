@@ -244,9 +244,7 @@ artifacts/
 *.tlb
 *.tli
 *.tlh
-*.tmp
 *.tmp_proj
-*.log
 *.vspscc
 *.vssscc
 .builds
@@ -374,7 +372,6 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
-*~
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
@@ -465,3 +462,4 @@ dist/
 nbdist/
 .nb-gradle/
 
+!/src/main/java/gr/ntua/entities/Params.java

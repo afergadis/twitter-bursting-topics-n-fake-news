@@ -34,32 +34,32 @@ public class Params {
         this.to = to;
     }
 
-    public List getPossibleFrom() {
+    public List<String> getPossibleFrom() {
         DateTime dt = new DateTime();  // current time
         int hours = dt.getHourOfDay(); // gets hour of day
 
-        List fromList = new ArrayList<String>();
+        List<String> fromList = new ArrayList<>();
         fromList.add("From Time ...");
 
         if ((hours % 2) != 0) {
             hours = hours - 1;
         }
         for (int i = hours; i <= 24; i = i + 2) {
-            fromList.add(i + ":00");
+            fromList.add(String.format("%2d:00", i));
         }
 
         for (int i = 2; i < hours; i = i + 2) {
-            fromList.add(i + ":00");
+            fromList.add(String.format("%2d:00", i));
         }
 
         return fromList;
     }
 
-    public List getPossibleTo() {
+    public List<String> getPossibleTo() {
         DateTime dt = new DateTime();  // current time
         int hours = dt.getHourOfDay(); // gets hour of day
 
-        List toList = new ArrayList<String>();
+        List<String> toList = new ArrayList<>();
         toList.add("Until Time ...");
 
         if ((hours % 2) != 0) {
@@ -67,11 +67,11 @@ public class Params {
         }
 
         for (int i = hours + 2; i <= 24; i = i + 2) {
-            toList.add(i + ":00");
+            toList.add(String.format("%2d:00", i));
         }
 
         for (int i = 2; i <= hours; i = i + 2) {
-            toList.add(i + ":00");
+            toList.add(String.format("%2d:00", i));
         }
 
         return toList;
@@ -92,7 +92,7 @@ public class Params {
                 timespan = -1 * (24 - (chosenTime - hours));
             }
 
-            return new Long(timespan);
+            return (long) timespan;
         } else {
             throw new Exception();
         }
