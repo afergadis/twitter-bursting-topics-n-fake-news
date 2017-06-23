@@ -2,18 +2,20 @@ package gr.ntua.collector;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
+import gr.ntua.domain.Tweet;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class GetTweets {
 
+    private final StringBuilder arffHeader;
     private String wekaModel;
     private ConfigurationBuilder cb;
     private TwitterFactory twitterFactory;
@@ -22,7 +24,7 @@ public class GetTweets {
     private Classifier cls;
 
     public GetTweets() throws Exception {
-        wekaModel = GetTweets.class.getResource("/weka/RandomForest_0.701_ROC.model").getPath();
+        wekaModel = GetTweets.class.getResource("/weka/RF.model").getPath();
         cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("nYbEZcm9nB03x6axLGayTkMXf")
@@ -34,47 +36,70 @@ public class GetTweets {
         service = new ToneAnalyzer("2016-02-11");
         service.setUsernameAndPassword("c04813a8-a1d6-40a3-b32e-43c2cbe7ed99", "Ah6a7DipbjBO");
         cls = (Classifier) weka.core.SerializationHelper.read(wekaModel);
+
+        arffHeader = new StringBuilder();
+        arffHeader.append("@relation unlabeled\n\n");
+        arffHeader.append("@attribute anger numeric\n");
+        arffHeader.append("@attribute disgust numeric\n");
+        arffHeader.append("@attribute fear numeric\n");
+        arffHeader.append("@attribute joy numeric\n");
+        arffHeader.append("@attribute sadness numeric\n");
+        arffHeader.append("@attribute analytical numeric\n");
+        arffHeader.append("@attribute confident numeric\n");
+        arffHeader.append("@attribute tentative numeric\n");
+        arffHeader.append("@attribute openness numeric\n");
+        arffHeader.append("@attribute conscientiousness numeric\n");
+        arffHeader.append("@attribute extraversion numeric\n");
+        arffHeader.append("@attribute agreeableness numeric\n");
+        arffHeader.append("@attribute neuroticism numeric\n");
+        arffHeader.append("@attribute class {FAKE,REAL}\n\n");
+        arffHeader.append("@data");
+        arffHeader.append('\n');
     }
 
-    public void getTweets(String keyword) throws Exception {
-        getTweets(keyword, 5);
+    public List<Tweet> getTweets(String keyword) throws Exception {
+        return getTweets(keyword, 5);
     }
 
-    public List<String> getTweets(String keyword, int num) throws Exception {
+    public List<Tweet> getTweets(String keyword, int num) throws Exception {
         try {
             Query query = new Query(keyword);
             query.setCount(num);
             query.setLang("en");
+//            query.setSince();
+//            query.setUntil();
             QueryResult result;
             result = twitter.search(query);
-            List<Status> tweets = result.getTweets();
-            StringBuilder sb = new StringBuilder();
-            sb.append("title,anger,disgust,fear,joy,sadness,");
-            sb.append("analytical,confident,tentative,openness,");
-            sb.append("conscientiousness,extraversion,agreeableness,");
-            sb.append("neuroticism,label\n");
-            for (Status tweet : tweets) {
-                //εδω είναι όλη η πληροφορία για κάθε tweet - από εδώ θα τραβήξει το App πληροφορίες
-                String username = tweet.getUser().getScreenName();    //όνομα χρήστη
-                int followers = tweet.getUser().getFollowersCount();    //followers count
-                int friends = tweet.getUser().getFriendsCount(); //friends count
-                int retweecnt = tweet.getRetweetCount();    //retweet count
-                String text = tweet.getText();
+            List<Status> resultTweets = result.getTweets();
+            List<Tweet> scoredTweets = new ArrayList<>();
+            StringBuilder tweetVector = new StringBuilder();
+            tweetVector.append(arffHeader);
+            for (Status tweet : resultTweets) {
+                String text = tweet.getText().replaceAll("\n", "");
+                Tweet scoredTweet = new Tweet();
+                scoredTweet.setMessage(text);
+                scoredTweets.add(scoredTweet);
                 System.out.println("Analyzing tweet: " + text);
-
-                //εδώ τρέχουμε το text του κάθε tweet στον analyzer και φτιάχνουμε το feature vector σε ένα csv αρχείο
-                ToneAnalysis tone = service.getTone(text, null).execute();
-                sb.append(parseTones(text, tone));
+                tweetVector.append(getTone(text));
             }
+            File unlabeledArff = File.createTempFile("unlabeled", ".arff");
+            PrintWriter pw = new PrintWriter(unlabeledArff);
+            pw.write(tweetVector.toString());
+            pw.close();
             System.out.println("Tweets to vectors done! Classifying...");
-            File labeled = classify(sb);
-            Scanner scanner = new Scanner(labeled);
-            List<String> results = new ArrayList<>();
-            while (scanner.hasNext()) {
-                results.add(scanner.next());
+
+            ArffLoader arffLoader = new ArffLoader();
+            arffLoader.setSource(unlabeledArff);
+            Instances unlabeled = arffLoader.getDataSet();
+
+            // set class attribute
+            unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
+            // label instances
+            for (int i = 0; i < unlabeled.numInstances(); i++) {
+                double[] predictions = cls.distributionForInstance(unlabeled.instance(i));
+                scoredTweets.get(i).setFakeScore(predictions[0]);
             }
-            scanner.close();
-            return results;
+            return scoredTweets;
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
@@ -82,8 +107,8 @@ public class GetTweets {
         }
     }
 
-    private StringBuilder parseTones(String text, ToneAnalysis tone) throws JSONException {
-        StringBuilder sb = new StringBuilder();
+    private StringBuilder getTone(String text) throws JSONException {
+        ToneAnalysis tone = service.getTone(text, null).execute();
 
         JSONObject obj = new JSONObject(tone);
         JSONObject documentTone = (JSONObject) obj.get("documentTone");
@@ -95,7 +120,6 @@ public class GetTweets {
         JSONArray writingTones = (JSONArray) writingTone.get("tones");
         JSONArray socialTones = (JSONArray) socialTone.get("tones");
 
-        String title = "?"; //text.replaceAll("[^\\x20-\\x7E]", "");
         double anger = 0.00;
         double disgust = 0.00;
         double fear = 0.00;
@@ -109,97 +133,83 @@ public class GetTweets {
         double extraversion = 0.00;
         double agreeableness = 0.00;
         double neuroticism = 0.00;
+
         for (int i = 0; i < emotionTones.length(); i++) {
             JSONObject jsonObject = emotionTones.getJSONObject(i);
             Double score = (Double) jsonObject.get("score");
             String emotion = (String) jsonObject.get("id");
-            if (emotion.equals("anger")) {
-                anger = score;
-            } else if (emotion.equals("disgust")) {
-                disgust = score;
-            } else if (emotion.equals("fear")) {
-                fear = score;
-            } else if (emotion.equals("joy")) {
-                joy = score;
-            } else if (emotion.equals("sadness")) {
-                sadness = score;
+            switch (emotion) {
+                case "anger":
+                    anger = score;
+                    break;
+                case "disgust":
+                    disgust = score;
+                    break;
+                case "fear":
+                    fear = score;
+                    break;
+                case "joy":
+                    joy = score;
+                    break;
+                case "sadness":
+                    sadness = score;
+                    break;
             }
         }
         for (int i = 0; i < writingTones.length(); i++) {
             JSONObject jsonObject = writingTones.getJSONObject(i);
             Double score = (Double) jsonObject.get("score");
             String writing = (String) jsonObject.get("id");
-            if (writing.equals("analytical")) {
-                analytical = score;
-            } else if (writing.equals("confident")) {
-                confident = score;
-            } else if (writing.equals("tentative")) {
-                tentative = score;
+            switch (writing) {
+                case "analytical":
+                    analytical = score;
+                    break;
+                case "confident":
+                    confident = score;
+                    break;
+                case "tentative":
+                    tentative = score;
+                    break;
             }
         }
         for (int i = 0; i < socialTones.length(); i++) {
             JSONObject jsonObject = socialTones.getJSONObject(i);
             Double score = (Double) jsonObject.get("score");
             String social = (String) jsonObject.get("id");
-            if (social.equals("openness_big5")) {
-                openness = score;
-            } else if (social.equals("conscientiousness_big5")) {
-                conscientiousness = score;
-            } else if (social.equals("extraversion_big5")) {
-                extraversion = score;
-            } else if (social.equals("agreeableness_big5")) {
-                agreeableness = score;
-            } else if (social.equals("neuroticism_big5")) {
-                neuroticism = score;
+            switch (social) {
+                case "openness_big5":
+                    openness = score;
+                    break;
+                case "conscientiousness_big5":
+                    conscientiousness = score;
+                    break;
+                case "extraversion_big5":
+                    extraversion = score;
+                    break;
+                case "agreeableness_big5":
+                    agreeableness = score;
+                    break;
+                case "neuroticism_big5":
+                    neuroticism = score;
+                    break;
             }
         }
-        String label = "";
-        sb.append("\"").append(title).append("\",");
-        sb.append(anger).append(",");
-        sb.append(disgust).append(",");
-        sb.append(fear).append(",");
-        sb.append(joy).append(",");
-        sb.append(sadness).append(",");
-        sb.append(analytical).append(",");
-        sb.append(confident).append(",");
-        sb.append(tentative).append(",");
-        sb.append(openness).append(",");
-        sb.append(conscientiousness).append(",");
-        sb.append(extraversion).append(",");
-        sb.append(agreeableness).append(",");
-        sb.append(neuroticism).append(",");
-        sb.append(label).append('\n');
+        StringBuilder toneScores = new StringBuilder();
+        toneScores.append(anger).append(",");
+        toneScores.append(disgust).append(",");
+        toneScores.append(fear).append(",");
+        toneScores.append(joy).append(",");
+        toneScores.append(sadness).append(",");
+        toneScores.append(analytical).append(",");
+        toneScores.append(confident).append(",");
+        toneScores.append(tentative).append(",");
+        toneScores.append(openness).append(",");
+        toneScores.append(conscientiousness).append(",");
+        toneScores.append(extraversion).append(",");
+        toneScores.append(agreeableness).append(",");
+        toneScores.append(neuroticism).append(",");
+        toneScores.append("?\n");
 
-        return sb;
-    }
-
-    private File classify(StringBuilder sb) throws Exception {
-        File unlabeledCsv = File.createTempFile("unlabeled", ".csv");
-        File labeledCsv = File.createTempFile("labeled", ".csv");
-        PrintWriter pw = new PrintWriter(unlabeledCsv);
-        pw.write(sb.toString());
-        pw.close();
-
-        Instances unlabeled = new Instances(new BufferedReader(new FileReader(unlabeledCsv))); //προσοχή να αλλάξεις τα paths
-
-        // set class attribute
-        unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
-
-        // create copy
-        Instances labeled = new Instances(unlabeled);
-
-        // label instances
-        for (int i = 0; i < unlabeled.numInstances(); i++) {
-            double clsLabel = cls.classifyInstance(unlabeled.instance(i));
-            labeled.instance(i).setClassValue(clsLabel);
-        }
-        // save labeled data
-        BufferedWriter writer = new BufferedWriter(new FileWriter(labeledCsv)); //προσοχή να αλλάξεις τα paths
-        writer.write(labeled.toString());
-        writer.newLine();
-        writer.flush();
-        writer.close();
-
-        return labeledCsv;
+        return toneScores;
     }
 }

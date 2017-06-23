@@ -5,9 +5,15 @@ import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import weka.classifiers.Classifier;
+import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetTweets {
@@ -24,30 +30,35 @@ public class GetTweets {
         Twitter twitter = tf.getInstance();
         try {
             Query query = new Query(keyword);
-            query.setCount(5);
+            query.setCount(4);
             query.setLang("en");
+//            query.setSince();
+//            query.setUntil();
             QueryResult result;
             result = twitter.search(query);
             List<Status> tweets = result.getTweets();
-            File unlabeledCsv = File.createTempFile("unlabeled", ".csv");
+            File unlabeledCsv = File.createTempFile("unlabeled", ".arff");
+//            CSVWriter csvWriter = new CSVWriter(new FileWriter(unlabeledCsv));
             PrintWriter pw = new PrintWriter(unlabeledCsv);
             StringBuilder sb = new StringBuilder();
-              /*==- sb.append("title,");
-	            sb.append("anger,");
-	            sb.append("disgust,");
-	            sb.append("fear,");
-	            sb.append("joy,");
-	            sb.append("sadness,");
-                sb.append("analytical,");
-	            sb.append("confident,");
-	            sb.append("tentative,");
-	            sb.append("openness,");
-	            sb.append("conscientiousness,");
-	            sb.append("extraversion,");
-	            sb.append("agreeableness,");
-	            sb.append("neuroticism,");
-	            sb.append("label");
-	            sb.append('\n');*/
+//            sb.append("title,");
+            sb.append("@relation unlabeled\n\n");
+            sb.append("@attribute anger numeric\n");
+            sb.append("@attribute disgust numeric\n");
+            sb.append("@attribute fear numeric\n");
+            sb.append("@attribute joy numeric\n");
+            sb.append("@attribute sadness numeric\n");
+            sb.append("@attribute analytical numeric\n");
+            sb.append("@attribute confident numeric\n");
+            sb.append("@attribute tentative numeric\n");
+            sb.append("@attribute openness numeric\n");
+            sb.append("@attribute conscientiousness numeric\n");
+            sb.append("@attribute extraversion numeric\n");
+            sb.append("@attribute agreeableness numeric\n");
+            sb.append("@attribute neuroticism numeric\n");
+            sb.append("@attribute class {FAKE,REAL}\n\n");
+            sb.append("@data");
+            sb.append('\n');
             for (Status tweet : tweets) {
                 //εδω είναι όλη η πληροφορία για κάθε tweet - από εδώ θα τραβήξει το App πληροφορίες
                 String username = tweet.getUser().getScreenName();    //όνομα χρήστη
@@ -67,33 +78,52 @@ public class GetTweets {
 
                 parseTones(sb, text, tone);
             }
+            String[] split = sb.toString().split("\n");
+            List<String[]> csv = new ArrayList<String[]>();
+            for (int i = 0; i < split.length; i++) {
+                String[] values = split[i].split(",");
+                csv.add(values);
+            }
+//            csvWriter.writeAll(csv);
+//            csvWriter.flush();
+//            csvWriter.close();
             pw.write(sb.toString());
             pw.close();
             System.out.println("tweets to vectors done!");
 
 
             //εδώ τρέχουμε το μοντέλο με το feature vector
-            String rootPath = GetTweets.class.getResource("/weka/RandomForest_0.701_ROC.model").getPath();
+            String rootPath = GetTweets.class.getResource("/weka/RF.model").getPath();
             Classifier cls = (Classifier) weka.core.SerializationHelper.read(rootPath);
 
-            Instances unlabeled = new Instances(new BufferedReader(new FileReader(unlabeledCsv)));
+//            CSVLoader loader = new CSVLoader();
+//            loader.setNoHeaderRowPresent(true);
+            ArffLoader loader = new ArffLoader();
+            loader.setSource(unlabeledCsv);
+            Instances unlabeled = loader.getDataSet(); //new Instances(new BufferedReader(new FileReader(unlabeledCsv)));
 
             // set class attribute
             unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
-
+//            StringToNominal stringToNominal = new StringToNominal();
+//            stringToNominal.setInputFormat(unlabeled);
+//            Instances filterUnlabeled = Filter.useFilter(unlabeled, stringToNominal);
+            Instances filterUnlabeled = unlabeled;
             // create copy
-            Instances labeled = new Instances(unlabeled);
+            Instances labeled = new Instances(filterUnlabeled);
 
             // label instances
-            for (int i = 0; i < unlabeled.numInstances(); i++) {
-                double clsLabel = cls.classifyInstance(unlabeled.instance(i));
+            for (int i = 0; i < filterUnlabeled.numInstances(); i++) {
+                Instance instance = filterUnlabeled.instance(i);
+                instance.setClassMissing();
+                double clsLabel = cls.classifyInstance(instance);
+                double[] doubles = cls.distributionForInstance(instance);
                 labeled.instance(i).setClassValue(clsLabel);
             }
             // save labeled data
             File labeledCsv = File.createTempFile("labeled", ".csv");
             BufferedWriter writer = new BufferedWriter(new FileWriter(labeledCsv));
             writer.write(labeled.toString());
-            writer.newLine();
+//            writer.newLine();
             writer.flush();
             writer.close();
             System.exit(0);
@@ -115,7 +145,7 @@ public class GetTweets {
         JSONArray emotionTones = (JSONArray) emotionTone.get("tones");
         JSONArray writingTones = (JSONArray) writingTone.get("tones");
         JSONArray socialTones = (JSONArray) socialTone.get("tones");
-        String title = text;
+//        String title = text.replaceAll("[^\\x20-\\x7E]", "").replaceAll(",", "").replaceAll("\n", "");
         double anger = 0.00;
         double disgust = 0.00;
         double fear = 0.00;
@@ -173,8 +203,8 @@ public class GetTweets {
                 neuroticism = score;
             }
         }
-        String label = "";
-        sb.append(title).append(",");
+        String label = "?";
+//        sb.append(title).append(",");
         sb.append(anger).append(",");
         sb.append(disgust).append(",");
         sb.append(fear).append(",");
@@ -188,7 +218,7 @@ public class GetTweets {
         sb.append(extraversion).append(",");
         sb.append(agreeableness).append(",");
         sb.append(neuroticism).append(",");
-        sb.append(label).append(",");
+        sb.append(label);
         sb.append('\n');
     }
 
