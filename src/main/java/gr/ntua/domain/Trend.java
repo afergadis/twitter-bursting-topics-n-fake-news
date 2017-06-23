@@ -22,9 +22,15 @@ public class Trend {
     private Integer volume;
     @Column(name = "is_bursting")
     private Double bursting;
+    @Column(name = "first_seen")
+    private boolean firstSeen;
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getTimespanId() {
@@ -59,13 +65,23 @@ public class Trend {
         this.bursting = bursting;
     }
 
+    public boolean isFirstSeen() {
+        return firstSeen;
+    }
+
+    public void setFirstSeen(boolean firstSeen) {
+        this.firstSeen = firstSeen;
+    }
+
     @Override
     public String toString() {
         return "Trend{" +
-                "timespanId=" + timespanId +
+                "id=" + id +
+                ", timespanId=" + timespanId +
                 ", name='" + name + '\'' +
                 ", volume=" + volume +
-                ", bursting='" + bursting + '\'' +
+                ", bursting=" + bursting +
+                ", firstSeen=" + firstSeen +
                 '}';
     }
 }

@@ -14,9 +14,9 @@ public interface TrendRepository extends JpaRepository<Trend, Long> {
 
     List<Trend> findByNameOrderByIdAsc(String name);
 
-    List<Trend> findByNameAndTimespanId(String name, long timespanId);
+    List<Trend> findByNameAndIdLessThanEqualOrderByIdAsc(String name, long id);
 
-    List<Trend> findByBurstingEquals(Double percent);
+    List<Trend> findByBurstingEqualsOrderByIdAsc(Double percent);
 
     List<Trend> findByBurstingGreaterThanEqual(Double percent);
 

@@ -1,6 +1,8 @@
 package gr.ntua.service;
 
 import gr.ntua.domain.Trend;
+import gr.ntua.domain.TrendInfo;
+import gr.ntua.domain.Tweet;
 import gr.ntua.repository.TrendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,36 +21,49 @@ public class TrendService {
         this.trendRepository = trendRepository;
     }
 
+    /* Finds records that have 0.0 in `is_bursting` column. For every record find the
+     * most recent appearance searching by name and sorting by ids descending. If no
+     * record is found, then this is a first seen trend.
+
+     */
     // The logic of this function says that two cascading in id trends if they have difference over
     // 'percent' change, then the second indicates a bursting trend.
-    // Q1: To we save the 'bursting' flag in database?
-    //     If we do, then if the use changes the percent?
     public void updateBursting() {
-        List<Trend> trends = trendRepository.findByBurstingEquals(0.0);
-        for (Trend trend : trends) {
-            // Get the previous instance(s?) of that trend
-            List<Trend> byNameAndTimespanId = trendRepository.findByNameAndTimespanId(trend.getName(), trend.getTimespanId() - 1);
-            if (byNameAndTimespanId.size() == 0) {
-                // First seen trend
-                trend.setBursting(100.0);
-                trendRepository.save(trend);
+        // Find all new records need to be updated (percent = 0.0)
+        List<Trend> trendsToByUpdated = trendRepository.findByBurstingEqualsOrderByIdAsc(0.0);
+        for (Trend trendToUpdate : trendsToByUpdated) {
+            // Find by name the previous instances of that trend
+            List<Trend> trendInstances = trendRepository.findByNameAndIdLessThanEqualOrderByIdAsc(
+                    trendToUpdate.getName(), trendToUpdate.getId());
+            // First seen trend if there are no previous instances
+            if (trendInstances.size() == 1) {
+                trendToUpdate.setBursting(100.0);
+                trendToUpdate.setFirstSeen(true);
+                trendRepository.save(trendToUpdate);
                 continue;
             }
-            // Update two cascading trend_name instances if the volume is greater than the percent.
-            for (Trend t : byNameAndTimespanId) {
-                double percentChange = (trend.getVolume() / t.getVolume().doubleValue() - 1) * 100;
-                trend.setBursting(percentChange);
-                trendRepository.save(trend);
+            // Get two cascading trends and calculate percent change between previous and current instance.
+            for (int i = 0; i < trendInstances.size() - 1; i++) {
+                Trend previous = trendInstances.get(i);
+                Trend current = trendInstances.get(i + 1);
+                if (current.getBursting() > 0.0)
+                    continue;
+                double percentChange = (current.getVolume() / previous.getVolume().doubleValue() - 1) * 100;
+                current.setBursting(percentChange);
+                trendRepository.save(current);
             }
         }
     }
 
     public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
+        Trend trend = trendRepository.findTopByOrderByIdDesc();
         if (from != null && from <= 0) {
-            Trend trend = trendRepository.findTopByOrderByIdDesc();
             from = trend.getTimespanId() + from;
         }
         if (to != null && to <= 0) {
+            to = trend.getTimespanId() + to;
+        }
+        if (from != null && to != null && to < from) {
             return null;
         }
         if (from != null && to == null) {
@@ -65,5 +80,27 @@ public class TrendService {
 
     public Iterable<Trend> getTrendName(String trend_name) {
         return trendRepository.findByNameOrderByIdAsc(trend_name);
+    }
+
+    //TODO: should return the trend info and the tweets
+    public TrendInfo getTrendInfo(Long trend_id) {
+        //TODO: get the Trend with the specific id and initialize the TrendInfo
+        //dummy
+        Trend dummyTrend = new Trend();
+        dummyTrend.setId(trend_id);
+        dummyTrend.setName("Topic_1");
+
+        //TODO: Go to TrendInfo and change the dummy ...
+        TrendInfo trendInfo = new TrendInfo(dummyTrend);
+
+        //dummy for tweets
+        for (int i = 0; i < 5; i++) {
+            Tweet t = new Tweet();
+            t.setMessage("hello. this is a tweet message");
+            t.setFakeScore(i * 0.25 * 100);
+            trendInfo.addTweet(t);
+        }
+
+        return trendInfo;
     }
 }
