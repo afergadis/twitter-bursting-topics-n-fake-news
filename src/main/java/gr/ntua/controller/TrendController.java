@@ -56,13 +56,13 @@ public class TrendController {
 
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
-        Long fromL = null;
+        Long fromL;
         try {
             fromL = params.convert2timespan(params.getFrom());
         } catch (Exception e) {
             fromL = null;
         }
-        Long toL = null;
+        Long toL;
         try {
             toL = params.convert2timespan(params.getTo());
         } catch (Exception e) {
@@ -72,9 +72,8 @@ public class TrendController {
         try {
             Double percentage = 100.0;
             if ((params.getPercent() != null) && (params.getPercent() > 0)) {
-                percentage = new Double(params.getPercent());
+                percentage = params.getPercent();
             }
-
 
             model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
             List fromList = params.getPossibleFrom();
@@ -90,13 +89,9 @@ public class TrendController {
     }
 
     @PostMapping(path = "/fake")
-    public String fake(@ModelAttribute Trend newtrend, Model model, @RequestParam("trendId") String id) {
-        Long idL = null;
-
+    public String fake(@ModelAttribute Trend newtrend, Model model, @RequestParam("trendId") Long id) {
         try {
-            idL = Long.parseLong(id);
-
-            model.addAttribute("trendInfo", trendService.getTrendInfo(idL));
+            model.addAttribute("trendInfo", trendService.getTrendInfo(id));
         } catch (Exception e) {
             return "error";
         }
@@ -106,13 +101,10 @@ public class TrendController {
     @GetMapping(path = "/bursting/{percent}")
     public @ResponseBody
     Iterable<Trend> getBursting(@PathVariable Double percent,
-                                @RequestParam(required = false) String from,
-                                @RequestParam(required = false) String to) {
+                                @RequestParam(required = false) Long from,
+                                @RequestParam(required = false) Long to) {
         trendService.updateBursting();
-
-        Long fromL = Long.parseLong(from);
-        Long toL = Long.parseLong(to);
-        return trendService.getBursting(percent, fromL, toL);
+        return trendService.getBursting(percent, from, to);
     }
 
     @GetMapping(path = "/name/{trend_name}")

@@ -3,4 +3,4 @@
     - Check if `from<to`.</strike>
     
 2. Add time information to Trend class.
-3. Accept trendId
+3. <strike>Accept trendId</strike>

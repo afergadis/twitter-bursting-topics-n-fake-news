@@ -1,4 +1,4 @@
-package gr.ntua.collector;
+package gr.ntua.service;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
@@ -9,29 +9,28 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
-import java.io.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetTweets {
+public class TwitterService {
 
+    private static final Logger LOGGER = Logger.getLogger(TwitterService.class);
     private final StringBuilder arffHeader;
-    private String wekaModel;
-    private ConfigurationBuilder cb;
-    private TwitterFactory twitterFactory;
     private Twitter twitter;
     private ToneAnalyzer service;
     private Classifier cls;
 
-    public GetTweets() throws Exception {
-        wekaModel = GetTweets.class.getResource("/weka/RF.model").getPath();
-        cb = new ConfigurationBuilder();
+    public TwitterService() throws Exception {
+        String wekaModel = TwitterService.class.getResource("/weka/RF.model").getPath();
+        ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("nYbEZcm9nB03x6axLGayTkMXf")
                 .setOAuthConsumerSecret("3lUAUoyU7znn2GaAj8bZ1USJfBdC0BYoj3kc0g4QEvnFDjFUfD")
                 .setOAuthAccessToken("3131540223-Y3hXSCE3wevNHTLbw4MAQ9Qa6iivxGkyganZXgw")
                 .setOAuthAccessTokenSecret("ZtXw1VLmmqZzeCAhCJiC6YKrmq95ktDncdW1fRIQrxkWY");
-        twitterFactory = new TwitterFactory(cb.build());
+        TwitterFactory twitterFactory = new TwitterFactory(cb.build());
         twitter = twitterFactory.getInstance();
         service = new ToneAnalyzer("2016-02-11");
         service.setUsernameAndPassword("c04813a8-a1d6-40a3-b32e-43c2cbe7ed99", "Ah6a7DipbjBO");
@@ -79,7 +78,7 @@ public class GetTweets {
                 Tweet scoredTweet = new Tweet();
                 scoredTweet.setMessage(text);
                 scoredTweets.add(scoredTweet);
-                System.out.println("Analyzing tweet: " + text);
+                LOGGER.info("Analyzing tweet: " + text);
                 tweetVector.append(getTone(text));
             }
             File unlabeledArff = File.createTempFile("unlabeled", ".arff");

@@ -15,19 +15,18 @@ import java.util.List;
 @Service
 public class TrendService {
     private final TrendRepository trendRepository;
+    private TwitterService tweetsService;
 
     @Autowired
-    public TrendService(TrendRepository trendRepository) {
+    public TrendService(TrendRepository trendRepository) throws Exception {
         this.trendRepository = trendRepository;
+        tweetsService = new TwitterService();
     }
 
     /* Finds records that have 0.0 in `is_bursting` column. For every record find the
      * most recent appearance searching by name and sorting by ids descending. If no
      * record is found, then this is a first seen trend.
-
      */
-    // The logic of this function says that two cascading in id trends if they have difference over
-    // 'percent' change, then the second indicates a bursting trend.
     public void updateBursting() {
         // Find all new records need to be updated (percent = 0.0)
         List<Trend> trendsToByUpdated = trendRepository.findByBurstingEqualsOrderByIdAsc(0.0);
@@ -69,8 +68,7 @@ public class TrendService {
         if (from != null && to == null) {
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
         } else if (from == null && to != null) {
-//            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqualOrderByIdAsc(percent, to);
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
+            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(percent, to);
         } else if (from != null) {
             return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
         } else {
@@ -82,24 +80,11 @@ public class TrendService {
         return trendRepository.findByNameOrderByIdAsc(trend_name);
     }
 
-    //TODO: should return the trend info and the tweets
-    public TrendInfo getTrendInfo(Long trend_id) {
-        //TODO: get the Trend with the specific id and initialize the TrendInfo
-        //dummy
-        Trend dummyTrend = new Trend();
-        dummyTrend.setId(trend_id);
-        dummyTrend.setName("Topic_1");
-
-        //TODO: Go to TrendInfo and change the dummy ...
-        TrendInfo trendInfo = new TrendInfo(dummyTrend);
-
-        //dummy for tweets
-        for (int i = 0; i < 5; i++) {
-            Tweet t = new Tweet();
-            t.setMessage("hello. this is a tweet message");
-            t.setFakeScore(i * 0.25 * 100);
-            trendInfo.addTweet(t);
-        }
+    public TrendInfo getTrendInfo(Long trend_id) throws Exception {
+        Trend trend = trendRepository.findById(trend_id);
+        TrendInfo trendInfo = new TrendInfo(trend);
+        List<Tweet> tweets = tweetsService.getTweets(trend.getName(), 20);
+        trendInfo.setTweets(tweets);
 
         return trendInfo;
     }
