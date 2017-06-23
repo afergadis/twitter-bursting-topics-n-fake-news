@@ -1,18 +1,185 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Bursting Topics</title>
-    <!--/*/ <th:block th:include="fragments/header_inc :: head"></th:block> /*/-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Bursting Trends &mdash; Bursting Trends </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description"
+          content="Find the bursting topics and the fake news from twitter" />
+    <meta name="keywords"
+          content="bursting topics, fake news, breaking news, twitter" />
+    <meta name="author" content="katerina zamani" />
+
+    <link rel="stylesheet" th:href="@{css/animate.css}" href="../../static/css/animate.css"/>
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" th:href="@{css/icomoon.css}" href="../../static/css/icomoon.css"/>
+    <!-- Simple Line Icons-->
+    <link rel="stylesheet" th:href="@{css/simple-line-icons.css}" href="../../static/css/simple-line-icons.css"/>
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" th:href="@{css/magnific-popup.css}" href="../../static/css/magnific-popup.css"/>
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" th:href="@{css/wl.carousel.min.css}" href="../../static/css/owl.carousel.min.css"/>
+    <link rel="stylesheet" th:href="@{css/style.css}" href="../../static/css/style.css"/>
+    <link rel="stylesheet" th:href="@{css/owl.theme.default.min.css}" href="../../static/css/owl.theme.default.min.css"/>
+    <!-- Salvattore -->
+    <link rel="stylesheet" th:href="@{css/salvattore.css}" href="../../static/css/salvattore.css"/>
 </head>
 <body>
-<h2>Bursting Topics</h2>
-<table>
-    <tr th:each="trend: ${trends}">
-        <td th:text="${trend.timespanId}">timespanId</td>
-        <td th:text="${trend.name}">name</td>
-        <td th:text="${trend.volume}">volume</td>
-        <td th:text="${trend.bursting}">bursting</td>
-    </tr>
-</table>
+
+<div id="fh5co-menu" class="navbar">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="/contact" th:href="@{/contact}" class="fh5co-nav-toggle">Contact Us</a>
+                <a href="/" th:href="@{/}" class="navbar-brand"><span>Bursting Trends</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="fh5co-page">
+    <div id="fh5co-wrap">
+        <div id="fh5co-features" data-section="features">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2 fh5co-section-heading text-center">
+                        <h2 class="fh5co-lead to-animate">Explore the bursting news!</h2>
+                        <p class="fh5co-sub to-animate">Choose one of the bursting topics below and check some information as well as some of its representative tweets posted!</p>
+                    </div>
+
+                        <div th:each="trend: ${trends}">
+                            <div class="col-md-3 col-sm-6 col-xs-6 col-xxs-12">
+                                <form action="#" th:action="@{/fake}" th:object="${newtrend}" class="fh5co-feature to-animate" method="post">
+                                    <span class="fh5co-feature-icon"><i class="icon-eye"></i></span>
+                                    <h3 class="fh5co-feature-lead" th:text="${trend.name}"> </h3>
+                                    <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.timespanId}" > Pick Time</p>
+                                    <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}" > Volume</p>
+                                    <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}" > %</p>
+                                    <input type="hidden" name="trendId" th:value="${trend.id}"/>
+                                    <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
+                                    <input class="fh5co-feature-btn" type="submit" value="More Info"/>
+                                </form>
+                            </div>
+                        </div>
+                        <!--<div class="clearfix visible-sm-block"></div>-->
+
+                        <div class="fh5co-spacer fh5co-spacer-sm"></div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div id="fh5co-subscribe2">
+            <div class="container">
+                <p><b>Check all the bursting topics in a specific period of time!</b></p>
+
+                <div class="row animate-box">
+                    <form action="#" th:action="@{/bursting}" th:object="${params}" method="post">
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <input class="form-control" type="number" th:field="*{percent}" placeholder="Percentage (%) of bursting"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <!--<input class="form-control" type="text" th:field="*{from}" placeholder="From Time ..."/>-->
+                                <select class="form-control" th:field="*{from}">
+                                    <option th:each="i : ${fromList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <select class="form-control" th:field="*{to}">
+                                    <option th:each="i : ${toList}" th:value="${i}" th:text="${i}" th:selected="${ i==0 }">Options</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-primary" value="Check"/>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="fh5co-footer">
+        <div class="fh5co-overlay"></div>
+        <div class="fh5co-footer-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-md-push-3">
+                        <h3 class="fh5co-lead">About</h3>
+                        <ul>
+                            <li><a href="/contact" th:href="@{/contact}">Team Members</a></li>
+                            <li><a href="/contact" th:href="@{/contact}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-md-push-3">
+                        <h3 class="fh5co-lead">Support</h3>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-md-push-3">
+                        <h3 class="fh5co-lead">More Links</h3>
+                        <ul>
+                            <li><a href="https://www.ibm.com/cloud-computing/bluemix/"
+                                   target="_blank">IBM Bluemix</a></li>
+                            <li><a href="https://www.ece.ntua.gr/en" target="_blank">ECE
+                                Ntua</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 col-md-pull-9">
+                        <div class="fh5co-footer-logo">
+                            <a href="/" th:href="@{/}">Bursting Trends</a>
+                        </div>
+                        <p class="fh5co-copyright">
+                            <small>&copy; 2017. All Rights Reserved.
+                                Main
+                                Css Template by <a href="http://freehtml5.co/" target="_blank">FREEHTML5.co</a>
+                                Images: <a href="http://pexels.com/" target="_blank">Pexels</a>
+                            </small>
+                        </p>
+                        <p class="fh5co-social-icons">
+                            <a href="https://twitter.com/" target="_blank"><i
+                                    class="icon-twitter"></i></a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--</footer>-->
+
+</div>
+
+
+<!-- jQuery -->
+<script  th:src="@{js/jquery.min.js}" src="../../static/js/jquery.min.js"></script>
+<!-- jQuery Easing -->
+<script th:src="@{js/jquery.easing.1.3.js}" src="../../static/js/jquery.easing.1.3.js"></script>
+<!-- Bootstrap -->
+<script th:src="@{js/bootstrap.min.js}" src="../../static/js/bootstrap.min.js"></script>
+<!-- Waypoints -->
+<script th:src="@{js/jquery.waypoints.min.js}" src="../../static/js/jquery.waypoints.min.js"></script>
+<!-- Magnific Popup -->
+<script th:src="@{js/query.magnific-popup.min.js}" src="../../static/js/jquery.magnific-popup.min.js"></script>
+<!-- Owl Carousel -->
+<script th:src="@{js/owl.carousel.min.js}" src="../../static/js/owl.carousel.min.js"></script>
+<!-- toCount -->
+<script th:src="@{js/jquery.countTo.js}" src="../../static/js/jquery.countTo.js"></script>
+<!-- Main JS -->
+<script th:src="@{js/main.js}" src="../../static/js/main.js"></script>
+
 </body>
 </html>
