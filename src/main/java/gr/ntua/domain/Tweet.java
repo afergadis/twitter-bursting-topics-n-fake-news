@@ -28,6 +28,6 @@ public class Tweet {
     }
 
     public void setFakeScore(double fakeScore) {
-        this.fakeScore = fakeScore;
+        this.fakeScore = Math.round(fakeScore*100.0);
     }
 }
