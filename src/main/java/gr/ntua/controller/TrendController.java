@@ -16,9 +16,7 @@ public class TrendController {
     private final TrendService trendService;
 
     @Autowired
-    public TrendController(TrendService trendService) {
-        this.trendService = trendService;
-    }
+    public TrendController(TrendService trendService) { this.trendService = trendService; }
 
     @GetMapping(path = "/")
     public String index(Model model) {
