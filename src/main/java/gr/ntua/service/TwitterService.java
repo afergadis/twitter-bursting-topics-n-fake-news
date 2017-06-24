@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TwitterService {
-
-    private static final Logger LOGGER = Logger.getLogger(TwitterService.class);
     private Twitter twitter;
 
     public TwitterService() throws Exception {
