@@ -3,6 +3,7 @@ package gr.ntua.service;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 import gr.ntua.domain.Tweet;
+import gr.ntua.nlc.NLClassifier;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import weka.classifiers.Classifier;
@@ -21,6 +22,8 @@ public class TwitterService {
     private Twitter twitter;
     private ToneAnalyzer service;
     private Classifier cls;
+    // TODO: Not in this class
+    private NLClassifier nlClassifier;
 
     public TwitterService() throws Exception {
         String wekaModel = TwitterService.class.getResource("/weka/RF.model").getPath();
@@ -54,6 +57,8 @@ public class TwitterService {
         arffHeader.append("@attribute class {FAKE,REAL}\n\n");
         arffHeader.append("@data");
         arffHeader.append('\n');
+
+        nlClassifier = new NLClassifier();
     }
 
     public List<Tweet> getTweets(String keyword) throws Exception {
@@ -97,6 +102,9 @@ public class TwitterService {
             for (int i = 0; i < unlabeled.numInstances(); i++) {
                 double[] predictions = cls.distributionForInstance(unlabeled.instance(i));
                 scoredTweets.get(i).setFakeScore(predictions[0]);
+                // TODO: Remove. Debug only
+                LOGGER.info(predictions[0] + ": " + scoredTweets.get(i).getMessage());
+                nlClassifier.classify(scoredTweets.get(i).getMessage());
             }
             return scoredTweets;
         } catch (TwitterException te) {
