@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class TrendInfo {
     private Trend trend;
+    private String image;
     private List<Tweet> tweets = new ArrayList<Tweet>();
 
     public TrendInfo(Trend trend) {
@@ -32,5 +33,13 @@ public class TrendInfo {
 
     public void addTweet(Tweet tweet) {
         this.tweets.add(tweet);
+    }
+
+    public String getImage() {
+        return this.image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -64,7 +64,7 @@
                     <span class="faq-accordion-icon-toggle active"><i class="icon-arrow-down"></i></span>
                     <h3>Bursting Graph</h3>
                     <div class="faq-body" style="display: block;">
-                        <img th:src="@{images/line_graph.png}" src="../../static/images/line_graph.png"
+                        <img th:src="@{'data:image/jpeg;base64,'+${trendInfo.image}}"
                              alt="Graph of bursting topic"/>
                     </div>
                 </div>

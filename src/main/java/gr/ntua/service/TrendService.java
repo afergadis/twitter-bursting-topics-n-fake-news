@@ -16,11 +16,13 @@ import java.util.List;
 public class TrendService {
     private final TrendRepository trendRepository;
     private TwitterService tweetsService;
+    private ChartService chartService;
 
     @Autowired
     public TrendService(TrendRepository trendRepository) throws Exception {
         this.trendRepository = trendRepository;
         tweetsService = new TwitterService();
+        this.chartService = new ChartService();
     }
 
     /* Finds records that have 0.0 in `is_bursting` column. For every record find the
@@ -85,6 +87,11 @@ public class TrendService {
         TrendInfo trendInfo = new TrendInfo(trend);
         List<Tweet> tweets = tweetsService.getTweets(trend.getName(), 20);
         trendInfo.setTweets(tweets);
+
+        //get the x-y chart of the specific trend, defined by its name
+        Iterable<Trend> trendsByName = trendRepository.findByNameOrderByIdAsc(trendInfo.getTrend().getName());
+        String image = chartService.drawChart(trendsByName);
+        trendInfo.setImage(image);
 
         return trendInfo;
     }
