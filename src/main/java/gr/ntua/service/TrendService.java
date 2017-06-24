@@ -4,9 +4,14 @@ import gr.ntua.domain.Trend;
 import gr.ntua.domain.TrendInfo;
 import gr.ntua.domain.Tweet;
 import gr.ntua.repository.TrendRepository;
+import gr.ntua.watson.NLClassifier;
+import gr.ntua.watson.ToneVectorizer;
+import gr.ntua.weka.RFClassifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,7 +88,28 @@ public class TrendService {
     public TrendInfo getTrendInfo(Long trend_id) throws Exception {
         Trend trend = trendRepository.findById(trend_id);
         TrendInfo trendInfo = new TrendInfo(trend);
-        List<Tweet> tweets = tweetsService.getTweets(trend.getName(), 20);
+        // Get text of tweets
+        List<String> tweetsText = tweetsService.getTweets(trend.getName(), 20);
+        // Create a list of tweets with their text and FINAL fake score
+        List<Tweet> tweets = new ArrayList<>();
+
+        // Create a vector for the tweets using Watson's ToneAnalyzer
+        ToneVectorizer toneVectorizer = new ToneVectorizer();
+        File tweetsVectors = toneVectorizer.vectorize(tweetsText);
+        // Give tweets vectors to Weka's Random Forest model for classification
+        RFClassifier classifier = new RFClassifier();
+        List<Tweet> rfTweets = classifier.classify(tweetsText, tweetsVectors);
+
+        // Classify using Watson's trained Natural Language Classifier
+        NLClassifier nlClassifier = new NLClassifier();
+        List<Tweet> nlcTweets = nlClassifier.classify(tweetsText);
+
+        // Get the averate of the scores
+        for (int i = 0; i < tweetsText.size(); i++) {
+            assert rfTweets.get(i).getMessage() == nlcTweets.get(i).getMessage();
+            double avgScore = (rfTweets.get(i).getFakeScore() + nlcTweets.get(i).getFakeScore()) / 2.0;
+            tweets.add(new Tweet(tweetsText.get(i), avgScore));
+        }
         trendInfo.setTweets(tweets);
 
         return trendInfo;

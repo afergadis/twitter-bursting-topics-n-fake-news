@@ -8,6 +8,8 @@ public class Tweet {
     private double fakeScore;
 
     public Tweet() {
+        message = "";
+        fakeScore = 0.0;
     }
 
     public Tweet(String message, double fakeScore) {
