@@ -3,12 +3,13 @@ package gr.ntua.entities;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Params {
     private Double percent;
-    private String from = null;
-    private String to = null;
+    private Date from = null;
+    private Date to = null;
 
     public Double getPercent() {
         return percent;
@@ -18,19 +19,19 @@ public class Params {
         this.percent = percent;
     }
 
-    public String getFrom() {
+    public Date getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(Date from) {
         this.from = from;
     }
 
-    public String getTo() {
+    public Date getTo() {
         return to;
     }
 
-    public void setTo(String to) {
+    public void setTo(Date to) {
         this.to = to;
     }
 

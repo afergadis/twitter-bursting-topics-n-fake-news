@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +62,22 @@ public class TrendService {
                 trendRepository.save(current);
             }
         }
+    }
+
+    public List<Date> getDateFromTo() {
+        List<Date> dates = new ArrayList<>();
+        Trend firstTrend = trendRepository.findTopByOrderByIdAsc();
+        Trend lastTrend = trendRepository.findTopByOrderByIdDesc();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date from = sdf.parse(sdf.format(firstTrend.getDateTime()));
+            Date to = sdf.parse(sdf.format(lastTrend.getDateTime()));
+            dates.add(from);
+            dates.add(to);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dates;
     }
 
     public Iterable<Trend> getBursting(Double percent, Long from, Long to) {

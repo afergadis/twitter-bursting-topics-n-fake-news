@@ -28,6 +28,8 @@ public interface TrendRepository extends JpaRepository<Trend, Long> {
 
     Trend findTopByOrderByIdDesc();
 
+    Trend findTopByOrderByIdAsc();
+
     Trend findById(long id);
 
     // ATTENTION: Use class names in queries (t.name) instead of table names (t.trend_name)

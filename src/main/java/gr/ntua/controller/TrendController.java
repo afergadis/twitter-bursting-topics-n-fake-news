@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -26,9 +27,10 @@ public class TrendController {
             List fromList = params.getPossibleFrom();
             List toList = params.getPossibleTo();
 
+            List<Date> dates = trendService.getDateFromTo();
             model.addAttribute("params", params);
-            model.addAttribute("fromList", fromList);
-            model.addAttribute("toList", toList);
+            model.addAttribute("from", dates.get(0));
+            model.addAttribute("to", dates.get(1));
         } catch (Exception e) {
             return "error";
         }
@@ -54,18 +56,18 @@ public class TrendController {
 
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
-        Long fromL;
-        try {
-            fromL = params.convert2timespan(params.getFrom());
-        } catch (Exception e) {
-            fromL = null;
-        }
-        Long toL;
-        try {
-            toL = params.convert2timespan(params.getTo());
-        } catch (Exception e) {
-            toL = null;
-        }
+        Long fromL = Long.valueOf(1);
+//        try {
+//            fromL = params.convert2timespan(params.getFrom());
+//        } catch (Exception e) {
+//            fromL = null;
+//        }
+        Long toL = Long.valueOf(1);
+//        try {
+//            toL = params.convert2timespan(params.getTo());
+//        } catch (Exception e) {
+//            toL = null;
+//        }
 
         try {
             Double percentage = 100.0;
