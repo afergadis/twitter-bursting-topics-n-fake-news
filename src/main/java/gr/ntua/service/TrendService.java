@@ -14,12 +14,14 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by aris on 13/6/2017.
  */
 @Service
 public class TrendService {
+    private final Logger LOGGER = Logger.getLogger(TrendService.class.getName());
     private final TrendRepository trendRepository;
     private TwitterService tweetsService;
     private ChartService chartService;
@@ -111,8 +113,9 @@ public class TrendService {
 
         // Get the average of the scores
         for (int i = 0; i < tweetsText.size(); i++) {
-            assert Objects.equals(rfTweets.get(i).getMessage(), nlcTweets.get(i).getMessage());
-            double avgScore = (rfTweets.get(i).getFakeScore() + nlcTweets.get(i).getFakeScore()) / 2.0;
+            double avgScore = nlcTweets.get(i).getFakeScore();
+            if (rfTweets.size() > 0)
+                avgScore = (rfTweets.get(i).getFakeScore() + avgScore) / 2.0;
             tweets.add(new Tweet(tweetsText.get(i), avgScore));
         }
         trendInfo.setTweets(tweets);
