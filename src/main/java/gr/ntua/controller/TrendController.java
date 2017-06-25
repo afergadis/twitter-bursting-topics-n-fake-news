@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -24,14 +25,12 @@ public class TrendController {
         try {
             Params params = new Params();
 
-            List fromList = params.getPossibleFrom();
-            List toList = params.getPossibleTo();
-
             List<Date> dates = trendService.getDateFromTo();
             model.addAttribute("params", params);
             model.addAttribute("from", dates.get(0));
             model.addAttribute("to", dates.get(1));
         } catch (Exception e) {
+            e.printStackTrace();
             return "error";
         }
 
@@ -57,6 +56,7 @@ public class TrendController {
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
         Long fromL = Long.valueOf(1);
+
 //        try {
 //            fromL = params.convert2timespan(params.getFrom());
 //        } catch (Exception e) {
@@ -75,14 +75,20 @@ public class TrendController {
                 percentage = params.getPercent();
             }
 
-            model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
-            List fromList = params.getPossibleFrom();
-            List toList = params.getPossibleTo();
+            Date fromDate = null;
+            Date toDate = null;
+            try {
+                fromDate = params.convertFromToDate();
+                toDate = params.convertUntilToDate();
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
 
-            model.addAttribute("fromList", fromList);
-            model.addAttribute("toList", toList);
+            //TODO: pass the fromDate, toDate as parameters (null is for all trends)
+            model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
             model.addAttribute("newtrend", new Trend());
         } catch (Exception ex) {
+            ex.printStackTrace();
             return "error";
         }
         return "bursting_topics";
@@ -93,6 +99,7 @@ public class TrendController {
         try {
             model.addAttribute("trendInfo", trendService.getTrendInfo(id));
         } catch (Exception e) {
+            e.printStackTrace();
             return "error";
         }
         return "topic_info";

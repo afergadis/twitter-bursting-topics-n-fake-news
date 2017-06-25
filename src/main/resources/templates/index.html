@@ -124,37 +124,31 @@
                     <div class="row animate-box">
                         <form action="#" th:action="@{/bursting}" th:object="${params}" method="post">
                             <div class="col-md-3 col-sm-3">
+                                Percentage (%) of bursting:
                                 <div class="form-group">
                                     <input class="form-control" type="number" th:field="*{percent}"
-                                           placeholder="Percentage (%) of bursting"/>
+                                           placeholder="100"/>
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-3">
+                                From Date:
                                 <div class="form-group">
                                     <input class="form-control" type="date" th:min="*{from}" th:field="*{from}"/>
-                                    <!--<input class="form-control" type="text" th:field="*{from}" placeholder="From Time ..."/>-->
-                                    <!--<select class="form-control" th:field="*{from}">-->
-                                    <!--<option th:each="i : ${fromList}" th:value="${i}" th:text="${i}"-->
-                                    <!--th:selected="${ i==0 }">Options-->
-                                    <!--</option>-->
-                                    <!--</select>-->
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-3">
+                                Until Date:
                                 <div class="form-group">
                                     <input class="form-control" type="date" th:min="*{to}" th:field="*{to}"/>
-                                    <!--<select class="form-control" th:field="*{to}">-->
-                                    <!--<option th:each="i : ${toList}" th:value="${i}" th:text="${i}"-->
-                                    <!--th:selected="${ i==0 }">Options-->
-                                    <!--</option>-->
-                                    <!--</select>-->
                                 </div>
                             </div>
 
                             <div class="col-md-3 col-sm-3">
-                                <div class="form-group">
-                                    <input type="submit" class="btn btn-primary" value="Check"/>
-                                </div>
+                                <p>
+                                    <div class="form-group">
+                                        <input type="submit" class="btn btn-primary" value="Check"/>
+                                    </div>
+                                </p>
                             </div>
 
                         </form>

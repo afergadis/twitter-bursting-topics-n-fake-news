@@ -2,14 +2,16 @@ package gr.ntua.entities;
 
 import org.joda.time.DateTime;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Params {
     private Double percent;
-    private Date from = null;
-    private Date to = null;
+    private String from = null;
+    private String to = null;
 
     public Double getPercent() {
         return percent;
@@ -19,20 +21,30 @@ public class Params {
         this.percent = percent;
     }
 
-    public Date getFrom() {
+    public String getFrom() {
         return from;
     }
 
-    public void setFrom(Date from) {
+    public void setFrom(String from) {
         this.from = from;
     }
 
-    public Date getTo() {
+    public String getTo() {
         return to;
     }
 
-    public void setTo(Date to) {
+    public void setTo(String to) {
         this.to = to;
+    }
+
+    public Date convertFromToDate() throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        return formatter.parse(this.from);
+    }
+
+    public Date convertUntilToDate() throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        return formatter.parse(this.to);
     }
 
     public List<String> getPossibleFrom() {
