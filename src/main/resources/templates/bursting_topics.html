@@ -57,9 +57,12 @@
                                   class="fh5co-feature to-animate" method="post">
                                 <span class="fh5co-feature-icon"><i class="icon-eye"></i></span>
                                 <h3 class="fh5co-feature-lead" th:text="${trend.name}"></h3>
-                                <p class="fh5co-feature-text" th:text="${'Pick Time: '+trend.dateTime}"> Pick Time</p>
+                                <p class="fh5co-feature-text" th:text="${'Pick Date Time: '+trend.dateTime}"> Pick Date
+                                    Time</p>
                                 <p class="fh5co-feature-text" th:text="${'Tweets: '+trend.volume}"> Volume</p>
-                                <p class="fh5co-feature-text" th:text="${'Bursting: '+trend.bursting+'%'}"> %</p>
+                                <p class="fh5co-feature-text"
+                                   th:text="${'Bursting: '+#numbers.formatDecimal(trend.bursting,0,2)+'%'}"> %</p>
+                                <p class="fh5co-feature-text" th:text="${'First Seen: '+trend.firstSeen}"></p>
                                 <input type="hidden" name="trendId" th:value="${trend.id}"/>
                                 <!--<input type="hidden" name="topicId" value="<%=topic.getId()%>" />-->
                                 <input class="fh5co-feature-btn" type="submit" value="More Info"/>
