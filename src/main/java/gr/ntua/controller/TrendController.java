@@ -57,7 +57,6 @@ public class TrendController {
 
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
-//        trendService.updateBursting(); // TODO: Move updateBursting to TrendCollector
         try {
             Double percentage = 0.0;
             if ((params.getPercent() != null) && (params.getPercent() > 0)) {
@@ -70,9 +69,8 @@ public class TrendController {
                 fromDate = params.convertFromToDate();
                 toDate = params.convertUntilToDate();
             } catch (ParseException | NullPointerException ignored) {
-            } // Null Pointer means no dates given. That's ok, we pass them as nulls
+            } // Null Pointer means no dates given. That's ok, we pass them as nulls.
 
-            //TODO: pass the fromDate, toDate as parameters (null is for all trends)
             model.addAttribute("trends", trendService.getBursting(percentage, fromDate, toDate));
             model.addAttribute("newtrend", new Trend());
         } catch (Exception ex) {
@@ -91,20 +89,5 @@ public class TrendController {
             return "error";
         }
         return "topic_info";
-    }
-
-    @GetMapping(path = "/bursting/{percent}")
-    public @ResponseBody
-    Iterable<Trend> getBursting(@PathVariable Double percent,
-                                @RequestParam(required = false) Long from,
-                                @RequestParam(required = false) Long to) {
-        trendService.updateBursting();
-        return trendService.getBursting(percent, from, to);
-    }
-
-    @GetMapping(path = "/name/{trend_name}")
-    public @ResponseBody
-    Iterable<Trend> getTrendName(@PathVariable String trend_name) {
-        return trendService.getTrendName(trend_name);
     }
 }

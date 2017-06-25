@@ -63,7 +63,8 @@ public class ChartService {
         Iterator<Trend> trendIterator = trends.iterator();
         while (trendIterator.hasNext()) {
             Trend tempTrend = trendIterator.next();
-            trendSeries.add(tempTrend.getTimespanId(), tempTrend.getBursting());
+            // TODO: Change id to date (how?)
+            trendSeries.add(tempTrend.getId(), tempTrend.getBursting());
         }
 
         XYSeriesCollection dataset = new XYSeriesCollection();

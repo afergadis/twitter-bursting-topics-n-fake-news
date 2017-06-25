@@ -24,7 +24,6 @@ public class TrendsCollector {
     private final Logger LOGGER = Logger.getLogger(TrendsCollector.class.getName());
     //    private final String TAG = "TwitterUtils";
     private final TrendService trendService;
-    private Long counter = 0L; // TODO: Remove
 
     @Autowired
     public TrendsCollector(TrendService trendService) {
@@ -33,7 +32,6 @@ public class TrendsCollector {
 
     @Scheduled(fixedRate = 7200000)
     public void collectTrends() {
-        counter++;
         String jsonresponse = getTimelineForSearchTerm();
         jsonresponse = jsonresponse.substring(1, jsonresponse.length() - 1);
         try {
@@ -43,9 +41,9 @@ public class TrendsCollector {
                 try {
                     Integer tweet_volume = arr.getJSONObject(i).getInt("tweet_volume");
                     String name = arr.getJSONObject(i).getString("name");
-                    Trend trend = new Trend(counter, name, tweet_volume);
+                    Trend trend = new Trend(name, tweet_volume);
                     Trend save = trendService.save(trend);
-                    trendService.updateBursting(); // TODO: accept trend as parameter and update only those trends
+                    trendService.updateBursting(trend);
                     LOGGER.info(save.toString());
                 } catch (Exception ignored) {
                 }
@@ -57,8 +55,8 @@ public class TrendsCollector {
 
     private String appAuthentication() {
         HttpURLConnection httpConnection = null;
-        OutputStream outputStream = null;
-        BufferedReader bufferedReader = null;
+        OutputStream outputStream;
+        BufferedReader bufferedReader;
         StringBuilder response = null;
 
         try {
