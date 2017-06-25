@@ -2,7 +2,10 @@ package gr.ntua.repository;
 
 import gr.ntua.domain.Trend;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Temporal;
 
+import javax.persistence.TemporalType;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,15 +29,13 @@ public interface TrendRepository extends JpaRepository<Trend, Long> {
 
     List<Trend> findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(Double percent, Long to);
 
+    Trend findById(long id);
+
     Trend findTopByOrderByIdDesc();
 
     Trend findTopByOrderByIdAsc();
 
-    Trend findById(long id);
-
-    // ATTENTION: Use class names in queries (t.name) instead of table names (t.trend_name)
-    // Find all trend names that has bursting value zero. This new are entries since
-    // the last api call to get bursting trends.
-//    @Query(value = "SELECT DISTINCT t.name FROM Trend t WHERE t.bursting=0")
-//    List<String> findDistinctNamesAndBurstingEqualsZero();
+    List<Trend> findByBurstingGreaterThanEqualAndDateTimeBetween(Double percent,
+                                                                 @Temporal(TemporalType.TIMESTAMP) Date from,
+                                                                 @Temporal(TemporalType.TIMESTAMP) Date to);
 }

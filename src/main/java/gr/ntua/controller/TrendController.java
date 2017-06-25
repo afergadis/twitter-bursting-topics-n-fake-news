@@ -18,7 +18,9 @@ public class TrendController {
     private final TrendService trendService;
 
     @Autowired
-    public TrendController(TrendService trendService) { this.trendService = trendService; }
+    public TrendController(TrendService trendService) {
+        this.trendService = trendService;
+    }
 
     @GetMapping(path = "/")
     public String index(Model model) {
@@ -55,22 +57,9 @@ public class TrendController {
 
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
-        Long fromL = Long.valueOf(1);
-
-//        try {
-//            fromL = params.convert2timespan(params.getFrom());
-//        } catch (Exception e) {
-//            fromL = null;
-//        }
-        Long toL = Long.valueOf(1);
-//        try {
-//            toL = params.convert2timespan(params.getTo());
-//        } catch (Exception e) {
-//            toL = null;
-//        }
-
+//        trendService.updateBursting(); // TODO: Move updateBursting to TrendCollector
         try {
-            Double percentage = 100.0;
+            Double percentage = 0.0;
             if ((params.getPercent() != null) && (params.getPercent() > 0)) {
                 percentage = params.getPercent();
             }
@@ -80,12 +69,11 @@ public class TrendController {
             try {
                 fromDate = params.convertFromToDate();
                 toDate = params.convertUntilToDate();
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
+            } catch (ParseException | NullPointerException ignored) {
+            } // Null Pointer means no dates given. That's ok, we pass them as nulls
 
             //TODO: pass the fromDate, toDate as parameters (null is for all trends)
-            model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
+            model.addAttribute("trends", trendService.getBursting(percentage, fromDate, toDate));
             model.addAttribute("newtrend", new Trend());
         } catch (Exception ex) {
             ex.printStackTrace();

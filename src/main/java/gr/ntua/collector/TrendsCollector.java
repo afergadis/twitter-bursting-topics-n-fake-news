@@ -1,7 +1,7 @@
 package gr.ntua.collector;
 
 import gr.ntua.domain.Trend;
-import gr.ntua.repository.TrendRepository;
+import gr.ntua.service.TrendService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +22,13 @@ import java.util.logging.Logger;
 @Component
 public class TrendsCollector {
     private final Logger LOGGER = Logger.getLogger(TrendsCollector.class.getName());
-    private final String URL_ROOT_TWITTER_API = "https://api.twitter.com";
-    //    private final String URL_SEARCH = URL_ROOT_TWITTER_API + "/1.1/search/tweets.json?q=";
-    private final String URL_AUTHENTICATION = URL_ROOT_TWITTER_API + "/oauth2/token";
-    private final String URL_INDIA_TRENDING = "https://api.twitter.com/1.1/trends/place.json?id=23424975";
-    private final String CONSUMER_KEY = "nYbEZcm9nB03x6axLGayTkMXf";
-    private final String CONSUMER_SECRET = "3lUAUoyU7znn2GaAj8bZ1USJfBdC0BYoj3kc0g4QEvnFDjFUfD";
     //    private final String TAG = "TwitterUtils";
-    private final TrendRepository trendRepository;
-    private Long counter = Long.valueOf(0);
+    private final TrendService trendService;
+    private Long counter = 0L; // TODO: Remove
 
     @Autowired
-    public TrendsCollector(TrendRepository trendRepository) {
-        this.trendRepository = trendRepository;
+    public TrendsCollector(TrendService trendService) {
+        this.trendService = trendService;
     }
 
     @Scheduled(fixedRate = 7200000)
@@ -50,7 +44,8 @@ public class TrendsCollector {
                     Integer tweet_volume = arr.getJSONObject(i).getInt("tweet_volume");
                     String name = arr.getJSONObject(i).getString("name");
                     Trend trend = new Trend(counter, name, tweet_volume);
-                    Trend save = trendRepository.save(trend);
+                    Trend save = trendService.save(trend);
+                    trendService.updateBursting(); // TODO: accept trend as parameter and update only those trends
                     LOGGER.info(save.toString());
                 } catch (Exception ignored) {
                 }
@@ -67,12 +62,16 @@ public class TrendsCollector {
         StringBuilder response = null;
 
         try {
+            String URL_ROOT_TWITTER_API = "https://api.twitter.com";
+            String URL_AUTHENTICATION = URL_ROOT_TWITTER_API + "/oauth2/token";
             URL url = new URL(URL_AUTHENTICATION);
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
             httpConnection.setDoInput(true);
 
+            String CONSUMER_KEY = "nYbEZcm9nB03x6axLGayTkMXf";
+            String CONSUMER_SECRET = "3lUAUoyU7znn2GaAj8bZ1USJfBdC0BYoj3kc0g4QEvnFDjFUfD";
             String accessCredential = CONSUMER_KEY + ":" + CONSUMER_SECRET;
             String authorization = "Basic " + Base64.getEncoder().encodeToString(accessCredential.getBytes());
             String param = "grant_type=client_credentials";
@@ -109,6 +108,7 @@ public class TrendsCollector {
         StringBuilder response = new StringBuilder();
 
         try {
+            String URL_INDIA_TRENDING = "https://api.twitter.com/1.1/trends/place.json?id=23424975";
             URL url = new URL(URL_INDIA_TRENDING);
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestMethod("GET");

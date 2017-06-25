@@ -133,13 +133,15 @@
                             <div class="col-md-3 col-sm-3">
                                 From Date:
                                 <div class="form-group">
-                                    <input class="form-control" type="date" th:min="*{from}" th:field="*{from}"/>
+                                    <input class="form-control" type="date" th:min="*{from}" th:field="*{from}"
+                                           th:value="*{from}"/>
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-3">
                                 Until Date:
                                 <div class="form-group">
-                                    <input class="form-control" type="date" th:min="*{to}" th:field="*{to}"/>
+                                    <input class="form-control" type="date" th:min="*{to}" th:field="*{to}"
+                                           th:value="*{to}"/>
                                 </div>
                             </div>
 

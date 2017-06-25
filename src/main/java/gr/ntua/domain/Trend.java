@@ -14,16 +14,16 @@ public class Trend {
     @Column(name = "id")
     private Long id;
     @Column(name = "timespan_id")
-    private Long timespanId;
-    @Column(name = "trend_name")
+    private Long timespanId; // TODO: Remove
+    @Column(name = "trend_name") // TODO: Rename
     private String name;
-    @Column(name = "trend_volume")
+    @Column(name = "trend_volume") // TODO: Rename
     private Integer volume;
-    @Column(name = "is_bursting")
+    @Column(name = "is_bursting") // TODO: Rename
     private Double bursting;
     @Column(name = "first_seen")
     private boolean firstSeen;
-    @Column(name = "date_time")
+    @Column(name = "date_time", columnDefinition = "DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
 

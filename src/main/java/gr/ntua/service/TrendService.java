@@ -37,7 +37,7 @@ public class TrendService {
      * most recent appearance searching by name and sorting by ids descending. If no
      * record is found, then this is a first seen trend.
      */
-    public void updateBursting() {
+    public void updateBursting() {// TODO: accept trend as parameter and update only those trends
         // Find all new records need to be updated (percent = 0.0)
         List<Trend> trendsToByUpdated = trendRepository.findByBurstingEqualsOrderByIdAsc(0.0);
         for (Trend trendToUpdate : trendsToByUpdated) {
@@ -80,7 +80,17 @@ public class TrendService {
         return dates;
     }
 
-    public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
+    public Iterable<Trend> getBursting(Double percent, Date from, Date to) {
+        List<Date> dates = getDateFromTo();
+        if (from == null)
+            from = dates.get(0);
+        if (to == null)
+            to = dates.get(1);
+        List<Trend> burstingTrends = trendRepository.findByBurstingGreaterThanEqualAndDateTimeBetween(percent, from, to);
+        return burstingTrends;
+    }
+
+    public Iterable<Trend> getBursting(Double percent, Long from, Long to) { // TODO: Remove
         Trend trend = trendRepository.findTopByOrderByIdDesc();
         if (from != null && from <= 0) {
             from = trend.getTimespanId() + from;
@@ -139,5 +149,9 @@ public class TrendService {
         trendInfo.setImage(image);
 
         return trendInfo;
+    }
+
+    public Trend save(Trend trend) {
+        return trendRepository.save(trend);
     }
 }
