@@ -12,7 +12,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Iterator;
@@ -64,7 +63,8 @@ public class ChartService {
         Iterator<Trend> trendIterator = trends.iterator();
         while (trendIterator.hasNext()) {
             Trend tempTrend = trendIterator.next();
-            trendSeries.add(tempTrend.getTimespanId(), tempTrend.getBursting());
+            // TODO: Change id to date (how?)
+            trendSeries.add(tempTrend.getId(), tempTrend.getBursting());
         }
 
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -80,13 +80,10 @@ public class ChartService {
             byte[] bytes = new byte[(int)file.length()];
             fileInputStreamReader.read(bytes);
             encodedfile = new String(Base64.encodeBase64(bytes), "UTF-8");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return encodedfile;
     }
-
 }

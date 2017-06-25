@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,20 +18,21 @@ public class TrendController {
     private final TrendService trendService;
 
     @Autowired
-    public TrendController(TrendService trendService) { this.trendService = trendService; }
+    public TrendController(TrendService trendService) {
+        this.trendService = trendService;
+    }
 
     @GetMapping(path = "/")
     public String index(Model model) {
         try {
             Params params = new Params();
 
-            List fromList = params.getPossibleFrom();
-            List toList = params.getPossibleTo();
-
+            List<Date> dates = trendService.getDateFromTo();
             model.addAttribute("params", params);
-            model.addAttribute("fromList", fromList);
-            model.addAttribute("toList", toList);
+            model.addAttribute("from", dates.get(0));
+            model.addAttribute("to", dates.get(1));
         } catch (Exception e) {
+            e.printStackTrace();
             return "error";
         }
 
@@ -54,33 +57,24 @@ public class TrendController {
 
     @PostMapping(path = "/bursting")
     public String bursting(@ModelAttribute Params params, Model model) {
-        Long fromL;
         try {
-            fromL = params.convert2timespan(params.getFrom());
-        } catch (Exception e) {
-            fromL = null;
-        }
-        Long toL;
-        try {
-            toL = params.convert2timespan(params.getTo());
-        } catch (Exception e) {
-            toL = null;
-        }
-
-        try {
-            Double percentage = 100.0;
+            Double percentage = 0.0;
             if ((params.getPercent() != null) && (params.getPercent() > 0)) {
                 percentage = params.getPercent();
             }
 
-            model.addAttribute("trends", trendService.getBursting(percentage, fromL, toL));
-            List fromList = params.getPossibleFrom();
-            List toList = params.getPossibleTo();
+            Date fromDate = null;
+            Date toDate = null;
+            try {
+                fromDate = params.convertFromToDate();
+                toDate = params.convertUntilToDate();
+            } catch (ParseException | NullPointerException ignored) {
+            } // Null Pointer means no dates given. That's ok, we pass them as nulls.
 
-            model.addAttribute("fromList", fromList);
-            model.addAttribute("toList", toList);
+            model.addAttribute("trends", trendService.getBursting(percentage, fromDate, toDate));
             model.addAttribute("newtrend", new Trend());
         } catch (Exception ex) {
+            ex.printStackTrace();
             return "error";
         }
         return "bursting_topics";
@@ -91,23 +85,9 @@ public class TrendController {
         try {
             model.addAttribute("trendInfo", trendService.getTrendInfo(id));
         } catch (Exception e) {
+            e.printStackTrace();
             return "error";
         }
         return "topic_info";
-    }
-
-    @GetMapping(path = "/bursting/{percent}")
-    public @ResponseBody
-    Iterable<Trend> getBursting(@PathVariable Double percent,
-                                @RequestParam(required = false) Long from,
-                                @RequestParam(required = false) Long to) {
-        trendService.updateBursting();
-        return trendService.getBursting(percent, from, to);
-    }
-
-    @GetMapping(path = "/name/{trend_name}")
-    public @ResponseBody
-    Iterable<Trend> getTrendName(@PathVariable String trend_name) {
-        return trendService.getTrendName(trend_name);
     }
 }
