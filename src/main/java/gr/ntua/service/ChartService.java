@@ -34,7 +34,7 @@ public class ChartService {
         JFreeChart xylineChart = ChartFactory.createLineChart(
                 chartTitle,
                 "Date",
-                "Bursting (%)",
+                "Volume",
                 getDataset(trends),
                 PlotOrientation.VERTICAL,
                 true, true, false);
@@ -68,7 +68,7 @@ public class ChartService {
             String date = dateToString(tempTrend.getDateTime());
             String[] datetime = date.split(" ");
 
-            dataset.addValue(tempTrend.getBursting(), datetime[0],datetime[1] );
+            dataset.addValue(tempTrend.getVolume(), datetime[0], datetime[1]);
         }
 
         return dataset;

@@ -13,13 +13,20 @@ import java.util.List;
  */
 public interface TrendRepository extends JpaRepository<Trend, Long> {
     Trend findById(long id);
+
     Trend findTopByOrderByIdDesc();
+
     Trend findTopByOrderByIdAsc();
 
     List<Trend> findByNameOrderByIdAsc(String name);
 
     List<Trend> findByNameAndIdLessThanEqualOrderByIdAsc(String name, long id);
+
     List<Trend> findByBurstingGreaterThanEqualAndDateTimeBetween(Double percent,
                                                                  @Temporal(TemporalType.TIMESTAMP) Date from,
                                                                  @Temporal(TemporalType.TIMESTAMP) Date to);
+
+//    List<Trend> findByBurstingGreaterThanEqualOrFirstSeenAndDateTimeBetween(Double percent,
+//                                                                             @Temporal(TemporalType.TIMESTAMP) Date from,
+//                                                                             @Temporal(TemporalType.TIMESTAMP) Date to);
 }
