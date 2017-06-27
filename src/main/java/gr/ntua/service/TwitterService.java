@@ -30,6 +30,7 @@ public class TwitterService {
             Query query = new Query(keyword);
             query.setCount(num);
             query.setLang("en");
+            // TODO: Use `since` and `until`
 //            query.setSince();
 //            query.setUntil();
             QueryResult result;

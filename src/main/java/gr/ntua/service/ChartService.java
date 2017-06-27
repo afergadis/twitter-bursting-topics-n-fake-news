@@ -6,15 +6,15 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -28,19 +28,20 @@ public class ChartService {
     }
 
     private String initialize(Iterable<Trend> trends) {
-        String chartTitle = "XY Chart for "+trends.iterator().next().getName();
+        String chartTitle = "Line Chart for "+trends.iterator().next().getName();
 
-        JFreeChart xylineChart = ChartFactory.createXYLineChart(
+
+        JFreeChart xylineChart = ChartFactory.createLineChart(
                 chartTitle,
-                "Time",
-                "Bursting (%)",
-                createDataset(trends),
+                "Date",
+                "Volume",
+                getDataset(trends),
                 PlotOrientation.VERTICAL,
                 true, true, false);
 
 
-        int width = 640;   /* Width of the image */
-        int height = 480;  /* Height of the image */
+        int width = 1240;   /* Width of the image */
+        int height = 780;  /* Height of the image */
 
         File XYChart = new File(filename);
 
@@ -57,21 +58,28 @@ public class ChartService {
         return imageB64;
     }
 
-    private XYDataset createDataset(Iterable<Trend> trends) {
-        XYSeries trendSeries = new XYSeries( "Bursting per hours" );
+    private DefaultCategoryDataset getDataset(Iterable<Trend> trends) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        trendSeries.add(0, 0);
         Iterator<Trend> trendIterator = trends.iterator();
         while (trendIterator.hasNext()) {
             Trend tempTrend = trendIterator.next();
-            trendSeries.add(tempTrend.getTimespanId(), tempTrend.getBursting());
-        }
 
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(trendSeries);
+            String date = dateToString(tempTrend.getDateTime());
+            String[] datetime = date.split(" ");
+
+            dataset.addValue(tempTrend.getVolume(), datetime[0], datetime[1]);
+        }
 
         return dataset;
     }
+
+    private String dateToString(Date date) {
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        return df.format(date);
+    }
+
 
     private String encodeFileToBase64Binary(File file) {
         String encodedfile = null;
@@ -80,13 +88,10 @@ public class ChartService {
             byte[] bytes = new byte[(int)file.length()];
             fileInputStreamReader.read(bytes);
             encodedfile = new String(Base64.encodeBase64(bytes), "UTF-8");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return encodedfile;
     }
-
 }

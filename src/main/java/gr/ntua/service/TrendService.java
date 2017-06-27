@@ -11,14 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by aris on 13/6/2017.
  */
 @Service
 public class TrendService {
+    private final Logger LOGGER = Logger.getLogger(TrendService.class.getName());
     private final TrendRepository trendRepository;
     private TwitterService tweetsService;
     private ChartService chartService;
@@ -34,57 +37,59 @@ public class TrendService {
      * most recent appearance searching by name and sorting by ids descending. If no
      * record is found, then this is a first seen trend.
      */
-    public void updateBursting() {
-        // Find all new records need to be updated (percent = 0.0)
-        List<Trend> trendsToByUpdated = trendRepository.findByBurstingEqualsOrderByIdAsc(0.0);
-        for (Trend trendToUpdate : trendsToByUpdated) {
-            // Find by name the previous instances of that trend
-            List<Trend> trendInstances = trendRepository.findByNameAndIdLessThanEqualOrderByIdAsc(
-                    trendToUpdate.getName(), trendToUpdate.getId());
-            // First seen trend if there are no previous instances
-            if (trendInstances.size() == 1) {
-                trendToUpdate.setBursting(100.0);
-                trendToUpdate.setFirstSeen(true);
-                trendRepository.save(trendToUpdate);
+    public void updateBursting(Trend trend) {
+        // Find by name the previous instances of that trend
+        List<Trend> trendInstances = trendRepository.findByNameAndIdLessThanEqualOrderByIdAsc(
+                trend.getName(), trend.getId());
+        // First seen trend if there are no previous instances
+        if (trendInstances.size() == 1) {
+            trend.setBursting(100.0);
+            trend.setFirstSeen();
+            trendRepository.save(trend);
+        }
+        // Get two cascading trends and calculate percent change between previous and current instance.
+        for (int i = 0; i < trendInstances.size() - 1; i++) {
+            Trend previous = trendInstances.get(i);
+            Trend current = trendInstances.get(i + 1);
+            if (current.getBursting() != 0.0)
                 continue;
-            }
-            // Get two cascading trends and calculate percent change between previous and current instance.
-            for (int i = 0; i < trendInstances.size() - 1; i++) {
-                Trend previous = trendInstances.get(i);
-                Trend current = trendInstances.get(i + 1);
-                if (current.getBursting() > 0.0)
-                    continue;
-                double percentChange = (current.getVolume() / previous.getVolume().doubleValue() - 1) * 100;
-                current.setBursting(percentChange);
-                trendRepository.save(current);
-            }
+            double percentChange = (current.getVolume() / previous.getVolume().doubleValue() - 1) * 100;
+            current.setBursting(percentChange);
+            trendRepository.save(current);
         }
     }
 
-    public Iterable<Trend> getBursting(Double percent, Long from, Long to) {
-        Trend trend = trendRepository.findTopByOrderByIdDesc();
-        if (from != null && from <= 0) {
-            from = trend.getTimespanId() + from;
+    public List<Date> getDateFromTo() {
+        List<Date> dates = new ArrayList<>();
+        Trend firstTrend = trendRepository.findTopByOrderByIdAsc();
+        Trend lastTrend = trendRepository.findTopByOrderByIdDesc();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date from = sdf.parse(sdf.format(firstTrend.getDateTime()));
+            Date to = sdf.parse(sdf.format(lastTrend.getDateTime()));
+            // If its the same date, then change `to` to tomorrow
+            if (from.equals(to)) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(to);
+                calendar.add(Calendar.DATE, 1);
+                to = calendar.getTime();
+            }
+            dates.add(from);
+            dates.add(to);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        if (to != null && to <= 0) {
-            to = trend.getTimespanId() + to;
-        }
-        if (from != null && to != null && to < from) {
-            return null;
-        }
-        if (from != null && to == null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdGreaterThanEqual(percent, from);
-        } else if (from == null && to != null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdLessThanEqual(percent, to);
-        } else if (from != null) {
-            return trendRepository.findByBurstingGreaterThanEqualAndTimespanIdBetween(percent, from, to);
-        } else {
-            return trendRepository.findByBurstingGreaterThanEqual(percent);
-        }
+        return dates;
     }
 
-    public Iterable<Trend> getTrendName(String trend_name) {
-        return trendRepository.findByNameOrderByIdAsc(trend_name);
+    public Iterable<Trend> getBursting(Double percent, Date from, Date to) {
+        List<Date> dates = getDateFromTo();
+        if (from == null)
+            from = dates.get(0);
+        if (to == null)
+            to = dates.get(1);
+        List<Trend> burstingTrends = trendRepository.findByBurstingGreaterThanEqualAndDateTimeBetween(percent, from, to);
+        return burstingTrends;
     }
 
     public TrendInfo getTrendInfo(Long trend_id) throws Exception {
@@ -106,10 +111,11 @@ public class TrendService {
         NLClassifier nlClassifier = new NLClassifier();
         List<Tweet> nlcTweets = nlClassifier.classify(tweetsText);
 
-        // Get the averate of the scores
+        // Get the average of the scores
         for (int i = 0; i < tweetsText.size(); i++) {
-            assert rfTweets.get(i).getMessage() == nlcTweets.get(i).getMessage();
-            double avgScore = (rfTweets.get(i).getFakeScore() + nlcTweets.get(i).getFakeScore()) / 2.0;
+            double avgScore = nlcTweets.get(i).getFakeScore();
+            if (rfTweets.size() > 0)
+                avgScore = (rfTweets.get(i).getFakeScore() + avgScore) / 2.0;
             tweets.add(new Tweet(tweetsText.get(i), avgScore));
         }
         trendInfo.setTweets(tweets);
@@ -120,5 +126,9 @@ public class TrendService {
         trendInfo.setImage(image);
 
         return trendInfo;
+    }
+
+    public Trend save(Trend trend) {
+        return trendRepository.save(trend);
     }
 }

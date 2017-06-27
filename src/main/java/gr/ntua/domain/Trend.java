@@ -1,29 +1,40 @@
 package gr.ntua.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by aris on 13/6/2017.
  */
 @Entity
-@Table(name = "trends_backup")
+@Table(name = "trends")
 public class Trend {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "timespan_id")
-    private Long timespanId;
-    @Column(name = "trend_name")
+    @Column(name = "name")
     private String name;
-    @Column(name = "trend_volume")
+    @Column(name = "volume")
     private Integer volume;
-    @Column(name = "is_bursting")
+    @Column(name = "burstiness")
     private Double bursting;
     @Column(name = "first_seen")
     private boolean firstSeen;
+    @Column(name = "date_time", columnDefinition = "DATETIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateTime;
+
+    public Trend(String name, Integer volume) {
+        this.name = name;
+        this.volume = volume;
+        bursting = 0.0;
+        firstSeen = false;
+        dateTime = new Date();
+    }
+
+    public Trend() {
+    }
 
     public Long getId() {
         return id;
@@ -31,14 +42,6 @@ public class Trend {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getTimespanId() {
-        return timespanId;
-    }
-
-    public void setTimespanId(Long timespanId) {
-        this.timespanId = timespanId;
     }
 
     public String getName() {
@@ -53,10 +56,6 @@ public class Trend {
         return volume;
     }
 
-    public void setVolume(Integer volume) {
-        this.volume = volume;
-    }
-
     public Double getBursting() {
         return bursting;
     }
@@ -69,19 +68,24 @@ public class Trend {
         return firstSeen;
     }
 
-    public void setFirstSeen(boolean firstSeen) {
-        this.firstSeen = firstSeen;
+    public void setFirstSeen() {
+        this.firstSeen = true;
+    }
+
+    public Date getDateTime() {
+        return dateTime;
     }
 
     @Override
     public String toString() {
         return "Trend{" +
                 "id=" + id +
-                ", timespanId=" + timespanId +
                 ", name='" + name + '\'' +
                 ", volume=" + volume +
-                ", bursting=" + bursting +
+                ", burstiness=" + bursting +
                 ", firstSeen=" + firstSeen +
+                ", dateTime=" + dateTime +
                 '}';
     }
+
 }
