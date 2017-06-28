@@ -7,7 +7,7 @@ import java.util.Date;
  * Created by aris on 13/6/2017.
  */
 @Entity
-@Table(name = "trends")
+@Table(name = "trends_backup")
 public class Trend {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
