@@ -33,17 +33,16 @@ public class TrendService {
         this.chartService = new ChartService();
     }
 
-    /* Finds records that have 0.0 in `is_bursting` column. For every record find the
-     * most recent appearance searching by name and sorting by ids descending. If no
-     * record is found, then this is a first seen trend.
+    /* Finds the previous instances of a Trend. If there is none, then flag as `first seen`.
+     * Otherwise calculate the percent change of volume with the last instance.
      */
     public void updateBursting(Trend trend) {
         // Find by name the previous instances of that trend
+        // TODO: Order DESC ang get only the last 2 instances
         List<Trend> trendInstances = trendRepository.findByNameAndIdLessThanEqualOrderByIdAsc(
                 trend.getName(), trend.getId());
         // First seen trend if there are no previous instances
         if (trendInstances.size() == 1) {
-            trend.setBursting(100.0);
             trend.setFirstSeen();
             trendRepository.save(trend);
         }
@@ -88,7 +87,7 @@ public class TrendService {
             from = dates.get(0);
         if (to == null)
             to = dates.get(1);
-        List<Trend> burstingTrends = trendRepository.findByBurstingGreaterThanEqualAndDateTimeBetween(percent, from, to);
+        List<Trend> burstingTrends = trendRepository.findByBurstingGreaterThanEqualOrFirstSeenAndDateTimeBetween(percent, from, to);
         return burstingTrends;
     }
 

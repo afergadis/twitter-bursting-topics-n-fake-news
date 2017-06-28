@@ -461,5 +461,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-
-!/src/main/java/gr/ntua/entities/Params.java
+src/main/resources/static/images/trend_graph.jpeg

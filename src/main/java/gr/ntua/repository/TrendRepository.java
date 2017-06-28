@@ -2,6 +2,7 @@ package gr.ntua.repository;
 
 import gr.ntua.domain.Trend;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 
 import javax.persistence.TemporalType;
@@ -26,7 +27,8 @@ public interface TrendRepository extends JpaRepository<Trend, Long> {
                                                                  @Temporal(TemporalType.TIMESTAMP) Date from,
                                                                  @Temporal(TemporalType.TIMESTAMP) Date to);
 
-//    List<Trend> findByBurstingGreaterThanEqualOrFirstSeenAndDateTimeBetween(Double percent,
-//                                                                             @Temporal(TemporalType.TIMESTAMP) Date from,
-//                                                                             @Temporal(TemporalType.TIMESTAMP) Date to);
+    @Query(value = "select t from Trend t where (t.firstSeen=1 or t.bursting>=?1) and t.dateTime>=?2 and t.dateTime<=?3")
+    List<Trend> findByBurstingGreaterThanEqualOrFirstSeenAndDateTimeBetween(Double percent,
+                                                                            @Temporal(TemporalType.TIMESTAMP) Date from,
+                                                                            @Temporal(TemporalType.TIMESTAMP) Date to);
 }
