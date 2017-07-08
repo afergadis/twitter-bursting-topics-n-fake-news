@@ -4,8 +4,11 @@ import com.ibm.watson.developer_cloud.natural_language_classifier.v1.NaturalLang
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classification;
 import gr.ntua.domain.Tweet;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -13,12 +16,20 @@ import java.util.logging.Logger;
  */
 public class NLClassifier {
     private static final Logger LOGGER = Logger.getLogger(NLClassifier.class.getName());
-    private static final String ClassifierID = "67a480x203-nlc-68882";
-    NaturalLanguageClassifier service;
+    private String ClassifierID = "67a480x203-nlc-68882";
+    private NaturalLanguageClassifier service;
 
     public NLClassifier() {
+        Properties credentials = new Properties();
+        try (InputStream inputStream = NLClassifier.class.getClassLoader().getResourceAsStream("credentials.properties")) {
+            credentials.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ClassifierID = credentials.getProperty("bluemix.natural_language_classifier.classifier_id");
         service = new NaturalLanguageClassifier();
-        service.setUsernameAndPassword("9a6f8181-4140-4c43-aaaa-7ba8211f73b8", "7N8NbZMiovz1");
+        service.setUsernameAndPassword(credentials.getProperty("bluemix.natural_language_classifier.username"),
+                credentials.getProperty("bluemix.natural_language_classifier.password"));
     }
 
     public static void main(String[] args) {
@@ -37,7 +48,6 @@ public class NLClassifier {
     public List<Tweet> classify(List<String> tweetsText) {
         List<Tweet> tweets = new ArrayList<>();
         for (String text : tweetsText) {
-            service.setUsernameAndPassword("9a6f8181-4140-4c43-aaaa-7ba8211f73b8", "7N8NbZMiovz1");
             Classification classification = service.classify(ClassifierID, text).execute();
             Tweet tweet = new Tweet();
             tweet.setMessage(text);

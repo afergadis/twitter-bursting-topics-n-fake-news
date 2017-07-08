@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -22,20 +21,31 @@ import java.util.logging.Logger;
 @Component
 public class TrendsCollector {
     private final Logger LOGGER = Logger.getLogger(TrendsCollector.class.getName());
-    //    private final String TAG = "TwitterUtils";
     private final TrendService trendService;
+    private String TWITTER_CONSUMER_KEY;
+    private String TWITTER_CONSUMER_SECRET;
+    private String TRENDS_PLACE_ID;
 
     @Autowired
     public TrendsCollector(TrendService trendService) {
         this.trendService = trendService;
+        Properties credentials = new Properties();
+        try (InputStream input = TrendsCollector.class.getClassLoader().getResourceAsStream("credentials.properties")) {
+            credentials.load(input);
+            TWITTER_CONSUMER_KEY = credentials.getProperty("twitter.consumer_key");
+            TWITTER_CONSUMER_SECRET = credentials.getProperty("twitter.consumer_secret");
+            TRENDS_PLACE_ID = "https://api.twitter.com/1.1/trends/place.json?id=" + credentials.getProperty("twitter.trends.place.id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Scheduled(fixedRate = 7200000)
     public void collectTrends() {
-        String jsonresponse = getTimelineForSearchTerm();
-        jsonresponse = jsonresponse.substring(1, jsonresponse.length() - 1);
+        String jsonResponse = getTimelineForSearchTerm();
+        jsonResponse = jsonResponse.substring(1, jsonResponse.length() - 1);
         try {
-            JSONObject obj = new JSONObject(jsonresponse);
+            JSONObject obj = new JSONObject(jsonResponse);
             JSONArray arr = obj.getJSONArray("trends");
             for (int i = 0; i < arr.length(); i++) {
                 try {
@@ -68,8 +78,8 @@ public class TrendsCollector {
             httpConnection.setDoOutput(true);
             httpConnection.setDoInput(true);
 
-            String CONSUMER_KEY = "nYbEZcm9nB03x6axLGayTkMXf";
-            String CONSUMER_SECRET = "3lUAUoyU7znn2GaAj8bZ1USJfBdC0BYoj3kc0g4QEvnFDjFUfD";
+            String CONSUMER_KEY = TWITTER_CONSUMER_KEY;
+            String CONSUMER_SECRET = TWITTER_CONSUMER_SECRET;
             String accessCredential = CONSUMER_KEY + ":" + CONSUMER_SECRET;
             String authorization = "Basic " + Base64.getEncoder().encodeToString(accessCredential.getBytes());
             String param = "grant_type=client_credentials";
@@ -106,8 +116,7 @@ public class TrendsCollector {
         StringBuilder response = new StringBuilder();
 
         try {
-            String URL_INDIA_TRENDING = "https://api.twitter.com/1.1/trends/place.json?id=23424975";
-            URL url = new URL(URL_INDIA_TRENDING);
+            URL url = new URL(TRENDS_PLACE_ID);
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestMethod("GET");
 

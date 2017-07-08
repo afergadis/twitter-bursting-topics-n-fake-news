@@ -8,8 +8,10 @@ import twitter4j.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -21,8 +23,15 @@ public class ToneVectorizer {
     private ToneAnalyzer service;
 
     public ToneVectorizer() {
+        Properties crendentials = new Properties();
+        try (InputStream input = ToneVectorizer.class.getClassLoader().getResourceAsStream("credentials.properties")) {
+            crendentials.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         service = new ToneAnalyzer("2016-02-11");
-        service.setUsernameAndPassword("c04813a8-a1d6-40a3-b32e-43c2cbe7ed99", "Ah6a7DipbjBO");
+        service.setUsernameAndPassword(crendentials.getProperty("bluemix.tone_analyzer.username"),
+                crendentials.getProperty("bluemix.tone_analyzer.password"));
 
         arffHeader = new StringBuilder();
         arffHeader.append("@relation unlabeled\n\n");

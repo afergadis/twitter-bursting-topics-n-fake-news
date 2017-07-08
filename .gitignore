@@ -462,3 +462,4 @@ dist/
 nbdist/
 .nb-gradle/
 src/main/resources/static/images/trend_graph.jpeg
+src/main/resources/credentials.properties

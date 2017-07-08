@@ -3,19 +3,25 @@ package gr.ntua.service;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class TwitterService {
     private Twitter twitter;
 
-    public TwitterService() throws Exception {
+    TwitterService() throws Exception {
+        Properties credentials = new Properties();
+        try (InputStream inputStream = TwitterService.class.getClassLoader().getResourceAsStream("credentials.properties")) {
+            credentials.load(inputStream);
+        }
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("nYbEZcm9nB03x6axLGayTkMXf")
-                .setOAuthConsumerSecret("3lUAUoyU7znn2GaAj8bZ1USJfBdC0BYoj3kc0g4QEvnFDjFUfD")
-                .setOAuthAccessToken("3131540223-Y3hXSCE3wevNHTLbw4MAQ9Qa6iivxGkyganZXgw")
-                .setOAuthAccessTokenSecret("ZtXw1VLmmqZzeCAhCJiC6YKrmq95ktDncdW1fRIQrxkWY");
+                .setOAuthConsumerKey(credentials.getProperty("twitter.consumer_key"))
+                .setOAuthConsumerSecret(credentials.getProperty("twitter.consumer_secret"))
+                .setOAuthAccessToken(credentials.getProperty("twitter.access_token"))
+                .setOAuthAccessTokenSecret(credentials.getProperty("twitter.access_token.secret"));
         TwitterFactory twitterFactory = new TwitterFactory(cb.build());
         twitter = twitterFactory.getInstance();
     }
@@ -24,15 +30,12 @@ public class TwitterService {
         return getTweets(keyword, 5);
     }
 
-    public List<String> getTweets(String keyword, int num) throws Exception {
+    List<String> getTweets(String keyword, int num) throws Exception {
         List<String> tweetsText = new ArrayList<>();
         try {
             Query query = new Query(keyword);
             query.setCount(num);
             query.setLang("en");
-            // TODO: Use `since` and `until`
-//            query.setSince();
-//            query.setUntil();
             QueryResult result;
             result = twitter.search(query);
             List<Status> resultTweets = result.getTweets();
